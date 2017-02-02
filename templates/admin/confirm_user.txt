@@ -1,0 +1,3 @@
+
+{{ user.username }} has registered. Click on the following link to confirm {{ user.username }}'s registration:
+{{ url_for('confirm_user_email', token=token, _external=True) }}

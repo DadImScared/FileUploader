@@ -1,0 +1,91 @@
+{% extends "layout.html" %}
+{% from "macros.html" import render_field %}
+
+{% block content %}
+    <div class="container py-2 mt-2" id="login">
+        <form method="POST" id="register-form" class="form row">
+            <div id="register-fields" class="col-xs-10 offset-xs-1 col-lg-6 offset-lg-3 py-2 my-2">
+            {{ form.hidden_tag() }}
+            <div class="form-group row">
+                <div class="col-xs-12">
+                    {{ render_field(form.email, class="form-control", type="email") }}
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-xs-12">
+                    {{ render_field(form.password, class="form-control", type="password") }}
+                </div>
+            </div>
+
+            <button type="submit" class="btn col-xs-12" id="submit">Login!</button>
+
+                </div>
+        </form>
+        <div class="text-xs-center pt-2">
+            <span>forgot password? click <a href="javascript:void(0)">here</a></span>
+        </div>
+    </div>
+    <!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div id="reset-form" class="modal-content">
+      <div class="modal-header text-xs-center">
+        <h6 class="modal-title mt-2" id="exampleModalLabel">Please enter your email to reset your password</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+            <div class="form-group">
+                <label for="email-input">Email: </label>
+                <input type="email" class="form-control" id="email-input" placeholder="Email">
+
+            </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+{#        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>#}
+{#        <button type="button" class="btn btn-primary">Save changes</button>#}
+          <button id="submit-email" class="btn btn-primary btn-block">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+    $('.form-control-feedback').prev().addClass("form-control-danger");
+    $('a').click(function() {
+        $('.modal').modal('toggle');
+    });
+
+    var emailPattern = new RegExp(/^[^\s@]+@[^\s@]+\.[^\s@]+$/g);
+    var $button = $('#submit-email');
+    var $email = $('#email-input');
+    var emailVal;
+    var info;
+
+    function validateEmail(email) {
+        return emailPattern.test(email);
+    }
+
+    $button.click(function() {
+        emailVal = $email.val();
+        info = {'email': emailVal};
+        if (validateEmail(emailVal)) {
+            $.ajax({
+            type: "POST",
+            url: "{{ url_for('reset_password') }}",
+            data: JSON.stringify(info, null, '\t'),
+            contentType: 'application/json;charset=UTF-8',
+            success: function(result) {
+                console.log(result)
+            }
+        });
+        }
+
+    });
+    </script>
+{% endblock %}

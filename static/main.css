@@ -1,0 +1,476 @@
+
+/*code,*/
+/*kbd,*/
+/*pre,*/
+/*.img-rounded,*/
+/*.img-thumbnail,*/
+/*.img-circle,*/
+/*.form-control,*/
+/*.btn,*/
+/*.btn-link,*/
+/*.dropdown-menu,*/
+/*.input-group-addon,*/
+/*.input-group-btn,*/
+/*.nav-tabs a,*/
+/*.nav-pills a,*/
+/*.navbar,*/
+/*.navbar-toggle,*/
+/*.icon-bar,*/
+/*.breadcrumb,*/
+/*.pagination,*/
+/*.pager *,*/
+/*.label,*/
+/*.badge,*/
+/*.jumbotron,*/
+/*.thumbnail,*/
+/*.alert,*/
+/*.progress,*/
+/*.panel,*/
+/*.well,*/
+/*.modal-content,*/
+/*.tooltip-inner,*/
+/*.popover,*/
+/*.popover-title,*/
+/*.carousel-indicators li {*/
+    /*border-radius:0 !important;*/
+/*}*/
+
+/***********      GENERAL          **********/
+
+
+/*.navbar,*/
+/*.navbar-toggle {*/
+    /*border-radius: 0 !important;;*/
+/*}*/
+
+.tabcontent {
+    display: none;
+    /*padding: 6px 12px;*/
+    /*border: 1px solid #ccc;*/
+    /*border-top: none;*/
+}
+
+html {
+    height: 100vh;
+}
+
+body {
+
+    background-color: #EE6352;
+}
+
+#banner {
+    /*background-color: #FF9B54;*/
+    background: -webkit-linear-gradient(top, rgba(247,240,82, .7) 5%, rgba(255,155,84, .7));
+}
+
+.navbar .dropdown-toggle:after {
+    display:none;
+}
+
+#main-sticky-nav {
+    border-radius: 0 !important;
+    position: relative;
+    z-index: 1000;
+    /*background-color: #DB4C40;*/
+    background: -webkit-linear-gradient(top, rgba(255,155,84, .7) 20%, rgba(238,99,82, .3) );
+}
+
+
+#sticky-nav {
+    background-color: #6A8D73;
+    border-radius: 5px;
+    position: relative;
+    z-index: 900;
+
+}
+
+/*#message {*/
+    /*padding-top: 100px;*/
+    /*width: 100%;*/
+    /*position: fixed;*/
+    /*box-sizing: border-box;*/
+
+/*}*/
+ul {
+    list-style: none;
+}
+
+
+#directory_choices.custom-select.form-control,
+#roles.form-control,
+#role-form {
+    color: #fff;
+    padding-top: 2px;
+    line-height: normal;
+    background-color: #00798C;
+}
+
+.fa-bars {
+    color: white;
+}
+
+.fa-sort {
+    padding-top: .40rem;
+}
+
+.options .fa-download,
+.options .fa-archive,
+.options .fa-trash {
+    color: white;
+}
+
+.download {
+    width: 5%;
+}
+
+.space-tables {
+    /*width: 25%;*/
+}
+
+.popover-content {
+    background-color: white;
+    color: red;
+}
+
+.pop-toggle {
+    color: black;
+}
+
+.pop-toggle, .pop-toggle:hover {
+    text-decoration: none;
+    cursor: pointer;
+}
+
+
+
+#nav-list li a {
+}
+
+
+
+#check-text, .form-control-file {
+    color: #fff;
+}
+
+table {
+    background-color: #ACBEA3;
+}
+
+thead {
+    background-color: #F4FDD9;
+    color: black;
+}
+
+.list-group-item {
+    background-color: #08415C;
+    border: none;
+    box-shadow: 0 0 10px black;
+}
+
+#unconfirmed-people {
+
+    color: white;
+ }
+
+#form {
+    background-color: #08415C;
+    border-radius: 5px;
+    box-shadow: 0 0 10px black;
+
+}
+
+.ui-accordion-content {
+ overflow: scroll;
+ height: 300px;
+}
+
+.profile-table-data {
+    width: 20%;
+}
+
+.full_name {
+    display: none;
+}
+
+.modal-content {
+    background-color: #08415C;
+    color: white;
+}
+
+#reset-form {
+
+}
+
+#home-nav.nav-link, #profile-nav.nav-link {
+    background-color: transparent;
+    /*border-top-color: #4464AD;*/
+    /*border-left-color: #4464AD;*/
+    /*border-right-color: #4464AD;*/
+    color: white;
+}
+
+#home, #profile {
+    /*border-left: 2px solid #4ECDC4;*/
+    background-color: #F8FFE5;
+    padding-bottom: 25px;
+
+
+}
+
+#home-nav.nav-link.active, #profile-nav.nav-link.active {
+    border-top-color: #4464AD;
+    border-left-color: #4464AD;
+    border-right-color: #4464AD;
+    color: black;
+    background-color: #F8FFE5;
+    border-bottom: solid 1px #F8FFE5;
+}
+
+/*.touchElements {*/
+    /*margin-right: -35px;*/
+/*}*/
+
+.nav-tabs {
+    border-bottom: solid 1px #F8FFE5;
+}
+
+#home-nav {
+
+}
+
+#settings-background, #password-settings-background {
+    padding-bottom: 25px;
+    padding-top: 25px;
+    background-color: #4ECDC4;
+    box-shadow: 0 0 10px black;
+    border-radius: 5px;
+}
+
+#form-settings-background, #password-form-background {
+    padding: 25px;
+    background-color: #1A535C;
+    margin: 0 auto;
+    box-shadow: 0 0 10px black;
+    border-radius: 5px;
+}
+
+/*#settings-tabs {*/
+    /*border-bottom: 2px solid #4464AD;*/
+/*}*/
+
+/***********      HOME PAGE            **********/
+/*maybe colors*/
+#main-body {
+    background-color: #1B998B;
+    box-shadow: 0 0 10px black;
+
+    border-radius: 5px;
+
+}
+
+#audioAndVideo {
+    background-color: #4ECDC4;
+    box-shadow: 0 0 10px black;
+    border-radius: 5px;
+}
+
+#submit,
+.assign-role,
+.submit {
+    color: #00798C;
+    /*background-color: #00798C;*/
+    background-color: transparent;
+    border-color: #00798C;
+    outline: none;
+}
+
+#submit:hover,
+.assign-role:hover,
+.submit:hover,
+.register-button:hover,
+.btn[disabled]:hover {
+    color: white;
+    background-color: #00798C;
+}
+
+.button-styles {
+    color: white;
+    background-color: #00798C;
+
+}
+
+.submit:focus,.assign-role:focus {
+    border-color: #00798C;
+    outline: none;
+}
+
+.btn-danger:focus {
+    outline: none;
+    background-color: #d9534f;
+    border-color: #d9534f;
+}
+
+.mobile-profile-list {
+    color: white;
+}
+
+.form-control-feedback {
+    /*background-color: #E4B1AB;*/
+    /*margin: 0 auto;*/
+    /*text-align: center;*/
+}
+
+/*.error-message-macro {*/
+    /*background-color: #E4B1ab;*/
+    /*margin: 0 auto;*/
+    /*text-align: center;*/
+    /*color: red;*/
+/*}*/
+
+.home-errors {
+    margin: 0 auto;
+    margin-top: 5px;
+    color: red;
+    background-color: #e4b1ab;
+    width: 40%;
+
+}
+
+#mobile-sticky-nav {
+    z-index: 20;
+}
+
+.fa-pencil-square-o {
+    color: #00798C;
+}
+
+
+.video-file-link,
+.audio-file-link,
+.download-link, .google-doc,
+.time, .worked-on,
+.time-download{
+    display: none;
+}
+
+.video-list-item,
+.audio-list-item {
+    word-wrap: break-word;
+    /*white-space: pre-wrap;*/
+    text-align: center;
+    vertical-align: middle;
+    min-height: 80px;
+}
+
+/*********** 588B8B     REGISTER PAGE     6A8D73   545F66   **********/
+/*maybe backgrounds 8EB1C7 495867*/
+/*maybe background of backgrounds F0A202*/
+#register,
+#login,
+#admin-register {
+    background-color: #4ECDC4;
+    box-shadow: 0 0 10px black;
+    border-radius: 5px;
+    /*width: 40%;*/
+}
+
+#register-form {
+    background-color: #1A535C;
+    margin: 0 auto;
+    box-shadow: 0 0 10px black;
+    border-radius: 5px;
+}
+
+#register-fields {
+    background-color: #264653;
+    box-shadow: 0 0 10px black;
+    border-radius: 5px;
+}
+
+.register-button {
+    border-color: #00798C;
+    background-color: transparent;
+    color: white;
+}
+
+.register-button:hover {
+    color: white;
+    background-color: #00798C;
+}
+/* 3A2E39 maybe main form choice*/
+/***********      REGISTER FORM           **********/
+
+#username.form-control {
+    line-height: normal;
+}
+
+#email.form-control {
+    line-height: normal;
+}
+
+/* The side navigation menu */
+.sidenav {
+    height: 100%; /* 100% Full-height */
+    width: 0; /* 0 width - change this with JavaScript */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Stay on top */
+    top: 0;
+    left: 0;
+    background-color: #111; /* Black*/
+    overflow-x: hidden; /* Disable horizontal scroll */
+    padding-top: 60px; /* Place content 60px from the top */
+    transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
+}
+
+/* The navigation menu links */
+.sidenav a {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #818181;
+    display: block;
+    transition: 0.3s
+}
+
+/* When you mouse over the navigation links, change their color */
+.sidenav a:hover, .offcanvas a:focus{
+    color: #f1f1f1;
+}
+
+/* Position and style the close button (top right corner) */
+.sidenav .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+}
+
+/* Style page content - use this if you want to push the page content to the right when you open the side navigation */
+#main {
+    transition: margin-left .5s;
+    padding: 20px;
+}
+
+/* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
+@media screen and (max-height: 450px) {
+    .sidenav {padding-top: 15px;}
+    .sidenav a {font-size: 18px;}
+}
+
+
+/***********      MEDIA QUERIES           **********/
+
+
+
+@media screen and (max-width: 768px) {
+
+    #video-files {
+        padding-top: 15px;
+    }
+
+    .center-text {
+        text-align: center;
+    }
+}

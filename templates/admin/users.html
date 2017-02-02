@@ -1,0 +1,178 @@
+{% extends "admin/adminlayout.html" %}
+
+{% block content %}
+    <div class="container">
+        <div id="users">
+            <table class="table hidden-md-down table-hover table-bordered">
+                <thead>
+                    <tr class="table-head-row">
+                        <th># <i id="edit-icon" class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+                        <th class="hidden-lg-down">Edit</th>
+                        <th>Username <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+                        <th>Email <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+                        <th class="hidden-lg-down">Joined <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+                        <th>Email confirmed <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+                        <th>Confirmed by Admin <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+                        <th>Role <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                        <tr id="{{ user.username }}" class="table-row-data">
+                            <th scope="row">{{ user.id }}</th>
+                            <td class="download hidden-lg-down">
+                                <a href="{{ url_for('admin_edit', id=user.id) }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                            </td>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.email }}</td>
+                            <td class="hidden-lg-down">{{ user.joined_at.strftime('%Y-%m-%d %I:%M:%p') }}</td>
+                            <td>
+                                {% if user.email_confirmed %}
+                                    yes
+                                {% else %}
+                                    no
+                                {% endif %}
+                            </td>
+                            <td><a href="{{ url_for('toggle_confirmed', email=user.email) }}"><button class="btn btn-sm col-xs-12 submit">
+                                {% if user.admin_confirmed %}
+                                    yes
+                                {% else %}
+                                    no
+                                {% endif %}
+                            </button></a></td>
+                            <td>
+                                {% if user.get_role() %}
+                                    <button data-toggle="modal" data-target="#myModal" class="assign-role role-buttons btn btn-sm col-xs-12">{{ user.get_role().name }}</button>
+                                {% else %}
+                                    <button data-toggle="modal" data-target="#myModal" class="role-buttons btn btn-sm btn-danger col-xs-12">Assign role</button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+              <label for="role-form">Select role:</label>
+            <select id="role-form" class="form-control">
+                <option class="role-options" value="stageone">Stage One</option>
+                <option class="role-options" value="stagetwo">Stage Two</option>
+                <option class="role-options" value="stagethree">Stage Three</option>
+                <option class="role-options" value="stagefour">Stage Four</option>
+                <option class="role-options" value="admin">Admin</option>
+            </select>
+          </div>
+      </div>
+      <div class="modal-footer">
+          <button id="delete-role" type="button" class="btn btn-danger float-xs-left">Unassign role</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button id="submit-role" type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    <script>$(".table").tablesorter();</script>
+    <script>
+
+{#    $('.table-row-data').map(function() {#}
+{#        console.log($(this).children());#}
+{#    });#}
+
+    $('.submit').click(function(e) {
+        e.preventDefault();
+{#        console.log($(this).parent().parent().prev()#}
+{#                .prev()#}
+{#                .prev()#}
+{#                .prev().text().replace(/ /g,''));#}
+        var person = $(this).parent().parent().parent().children(":nth-child(3)").text().replace(/ /g,'');
+        var admin_confirmed = $(this).parent().parent().parent().children(":nth-child(7)").text().trim(admin_confirmed);
+        console.log(admin_confirmed);
+        console.log(person);
+        if (admin_confirmed == "yes") {
+            $(this).parent().parent().parent().children(":nth-child(7)").children(":first-child").children(":first-child").text("no");
+        }
+        if (admin_confirmed == "no") {
+            $(this).parent().parent().parent().children(":nth-child(7)").children(":first-child").children(":first-child").text("yes");
+        }
+        var info = {"name": person};
+        $.ajax({
+            type: "POST",
+            url:"{{ url_for('toggle_admin_confirmed') }}",
+            data: JSON.stringify(info, null, '\t'),
+            contentType: 'application/json;charset=UTF-8',
+            success: function(result) {
+                console.log(result);
+            }
+        });
+    });
+
+    var personId;
+    var personEmail;
+    var assignedRole = "stageone";
+    var $roleButton;
+
+    $('.assign-role, .role-buttons').click(function() {
+        var $this = $(this);
+        $roleButton = $this.parent().parent().children(":nth-child(8)");
+        personId = $this.parent().parent().attr("id");
+        personEmail = $this.parent().parent().children(":nth-child(4)").text();
+        $('.modal-title').text(personEmail);
+{#        console.log($('#' + personId).children(":last-child").children().text("Stage One"));#}
+    });
+
+    $('#submit-role').click(function() {
+        var personInfo = {"name": personId, "role": assignedRole};
+        $.ajax({
+            type: "POST",
+            url:"{{ url_for('assign_role') }}",
+            data: JSON.stringify(personInfo, null, '\t'),
+            contentType: 'application/json;charset=UTF-8',
+            success: function(result) {
+                console.log(result);
+                $roleButton.children(":first-child").removeClass("btn-danger").addClass("assign-role");
+                $roleButton.children(":first-child").text(assignedRole);
+            }
+        });
+    });
+
+    $('#delete-role').click(function() {
+        var personInfo = {"name": personId, "role": assignedRole};
+        $.ajax({
+            type: "POST",
+            url:"{{ url_for('delete_role') }}",
+            data: JSON.stringify(personInfo, null, '\t'),
+            contentType: 'application/json;charset=UTF-8',
+            success: function(result) {
+                console.log(result);
+                $('.modal').modal('toggle');
+                $roleButton.children(":first-child").addClass("btn-danger").removeClass("assign-role");
+                $roleButton.children(":first-child").text("Assign role");
+            }
+        });
+    });
+
+    $('#role-form').change(function() {
+        assignedRole = $(this).val();
+    });
+    $('.modal').on('hide.bs.modal', function(e) {
+        $('#role-form').val("stageone");
+        assignedRole = $('#role-form').val();
+    });
+
+    </script>
+{% endblock %}

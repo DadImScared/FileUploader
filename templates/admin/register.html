@@ -1,0 +1,389 @@
+{% extends "admin/adminlayout.html" %}
+{% from "macros.html" import render_field %}
+
+{% block content %}
+<div id="register" class="container pt-2 pb-2 mt-2">
+    <form method="POST" id="register-form" class="form row">
+        <div id="register-fields" class="col-xs-12 col-lg-6 offset-lg-3 py-2 my-2">
+        {{ form.hidden_tag() }}
+{#        {{ render_field(form.username) }}#}
+        <div class="form-group row pt-2">
+            <div class="col-xs-12">
+            {{ render_field(form.username, class="form-control", type="text") }}
+                <div id="username-error" class="form-control-feedback"></div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-xs-12">
+            {{ render_field(form.email, class="form-control", type="email") }}
+                <div id="email-error" class="form-control-feedback"></div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-xs-12">
+            {{ render_field(form.password, class="form-control", type="password") }}
+                <div id="password-error" class="form-control-feedback"></div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-xs-12">
+            {{ render_field(form.password2, class="form-control", type="password") }}
+                <div id="password2-error" class="form-control-feedback"></div>
+            </div>
+        </div>
+        <div class="form-group row ">
+            <div class="col-xs-12">
+                <label class="text-white" for="roles">Select role: </label>
+                {{ render_field(form.roles, class="form-control") }}
+            </div>
+        </div>
+
+        <div class="form-group clearfix">
+        <button type="submit" disabled class="btn col-xs-12 register-button btn-primary mb-2 mt-1 col-sm-12">Submit</button>
+            </div>
+            </div>
+    </form>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+
+    var namePattern = new RegExp(/^[a-zA-Z0-9_]{3,}$/g);
+    var emailPattern = new RegExp(/^[^\s@]+@[^\s@]+\.[^\s@]+$/g);
+    var isValidName;
+    var isValidEmail;
+    var passwordsMatch;
+
+    function validateName(name) {
+        return namePattern.test(name);
+    }
+
+    function validateEmail(email) {
+        return emailPattern.test(email);
+    }
+
+    function enableSubmit() {
+        if (isValidName && isValidEmail && passwordsMatch) {
+            $('.register-button').attr("disabled", false);
+        }
+    }
+
+    function disabledSubmit() {
+        if (!isValidName || !isValidEmail || !passwordsMatch) {
+            $('.register-button').attr("disabled", "disabled");
+        }
+    }
+
+{#    function userExists(userName) {#}
+{#        $.ajax({#}
+{#                type: "POST",#}
+{#                url: "{{ url_for('name_exists') }}",#}
+{#                data: JSON.stringify(userName, null, '\t'),#}
+{#                contentType: 'application/json;charset=UTF-8',#}
+{#                success: function(result) {#}
+{#                    console.log(result);#}
+{#                    if (result == "success") {#}
+{#                        console.log("test2");#}
+{#                        $username.parent().parent().addClass("has-success");#}
+{#                        $username.addClass("form-control-success");#}
+{#                    } else if (result == "error") {#}
+{#                        $username.parent().parent().removeClass("has-success");#}
+{#                        $username.removeClass(("form-control-success"));#}
+{#                    }#}
+{##}
+{#                }#}
+{#            });#}
+{#    }#}
+var timer;
+    function debounce(fn, duration) {
+
+  return function(){
+    clearTimeout(timer);
+    timer = setTimeout(fn, duration);
+  }
+}
+$(function() {
+    $('#username').on('keyup', debounce(function() {
+        var $username = $('#username');
+        var $userVal = $username.val();
+        enableSubmit();
+        disabledSubmit();
+        if (isValidName || validateName($userVal)) {
+            console.log("valid!");
+            $.ajax({
+                type: "POST",
+                url: "{{ url_for('name_exists') }}",
+                data: JSON.stringify($userVal, null, '\t'),
+                contentType: 'application/json;charset=UTF-8',
+                success: function(result) {
+                    console.log(result);
+                    if (result == "success") {
+                        console.log("test2");
+                        isValidName = true;
+                        $('#username-error').text("Name ok");
+                        $username.parent().parent().addClass("has-success");
+                        $username.addClass("form-control-success");
+                        $username.parent().parent().removeClass("has-warning");
+                        $username.removeClass(("form-control-warning"));
+                    } else if (result == "error") {
+                        isValidName = false;
+                        $('#username-error').text("Name taken");
+                        $username.parent().parent().removeClass("has-success");
+                        $username.removeClass(("form-control-success"));
+                        $username.parent().parent().addClass("has-warning");
+                        $username.addClass("form-control-warning");
+                    }
+                    enableSubmit();
+                    disabledSubmit();
+
+                }
+            });
+        } else{
+            if (validateName($userVal.trim($userVal))) {
+                isValidName = true;
+                $('#username-error').text("Name ok");
+                $username.parent().parent().addClass("has-success");
+                        $username.addClass("form-control-success");
+            } else {
+            $('#username-error').text("Username should be one word, letters, numbers, and underscores only.");
+            $username.parent().parent().removeClass("has-success");
+                        $username.removeClass(("form-control-success"));
+                    $username.parent().parent().addClass("has-warning");
+                    $username.addClass("form-control-warning");
+        }
+        enableSubmit();
+        disabledSubmit();
+        }
+    }, 500));
+});
+    $(function() {
+    $('#email').on('keyup', debounce(function() {
+        var $email = $('#email');
+        var $emailVal = $email.val();
+        enableSubmit();
+        disabledSubmit();
+        if (isValidEmail || validateEmail($emailVal)) {
+            console.log("valid!");
+            $.ajax({
+                type: "POST",
+                url: "{{ url_for('email_exists') }}",
+                data: JSON.stringify($emailVal, null, '\t'),
+                contentType: 'application/json;charset=UTF-8',
+                success: function(result) {
+                    console.log(result);
+                    if (result == "success") {
+                        console.log("test2");
+                        isValidEmail = true;
+                        $('#email-error').text("Email ok");
+                        $email.parent().parent().addClass("has-success");
+                        $email.addClass("form-control-success");
+                        $email.parent().parent().removeClass("has-warning");
+                        $email.removeClass("form-control-warning")
+                    } else if (result == "error") {
+                        isValidEmail = false;
+                        $('#email-error').text("Email taken");
+                        $email.parent().parent().removeClass("has-success");
+                        $email.removeClass("form-control-success");
+                        $email.parent().parent().addClass("has-warning");
+                        $email.addClass("form-control-warning");
+                    }
+                    enableSubmit();
+                    disabledSubmit();
+                }
+            });
+        } else {
+            if (validateEmail($emailVal.trim($emailVal))) {
+                isValidEmail = true;
+                $('#email-error').text("Email ok");
+                $email.parent().parent().addClass("has-success");
+                $email.addClass("form-control-success");
+
+            } else {
+                $('#email-error').text("Email invalid");
+                $email.parent().parent().removeClass("has-success");
+                $email.removeClass(("form-control-success"));
+                $email.parent().parent().addClass("has-warning");
+                $email.addClass("form-control-warning");
+            }
+            enableSubmit();
+            disabledSubmit();
+        }
+    }, 500));
+});
+
+    $('#username').keyup(function() {
+        enableSubmit();
+        disabledSubmit();
+        var $this = $(this);
+        if (validateName($this.val())) {
+            isValidName = true;
+            $this.parent().parent().addClass("has-success");
+            $this.addClass("form-control-success");
+        } else{
+            isValidName = false;
+        }
+    });
+
+    $('#email').keyup(function() {
+        enableSubmit();
+        disabledSubmit();
+        console.log(isValidName);
+        console.log(passwordsMatch);
+        var $this = $(this);
+        if (validateEmail($this.val())) {
+            isValidEmail = true;
+            $this.parent().parent().addClass("has-success");
+            $this.addClass("form-control-success");
+        } else{
+            isValidEmail = false;
+        }
+    });
+
+    $('#username').focusout(function() {
+        enableSubmit();
+        disabledSubmit();
+        var $this = $(this);
+        var $userVal = $this.val();
+        if($($this).val().length === 0) {
+            clearTimeout(timer);
+            $('#username-error').text("");
+{#            REMOVE SUCCESS TOO#}
+            $this.parent().parent().removeClass("has-warning");
+            $this.removeClass("form-control-warning");
+        } else if ($this.val().length ) {
+            if (isValidName || validateName($this.val())) {
+                console.log("valid name from focusout");
+                clearTimeout(timer);
+                $.ajax({
+                    type: "POST",
+                    url: "{{ url_for('name_exists') }}",
+                    data: JSON.stringify($userVal, null, '\t'),
+                    contentType: 'application/json;charset=UTF-8',
+                    success: function(result) {
+                        console.log(result);
+                        if (result == "success") {
+                            isValidName = true;
+                            clearTimeout(timer);
+                            if (isValidName) {
+                                $('#username-error').text("Name ok");
+                                $this.parent().parent().addClass("has-success");
+                                $this.addClass("form-control-success");
+                                $this.parent().parent().removeClass("has-warning");
+                                $this.removeClass(("form-control-warning"));
+                            } else {
+                                $('#username-error').text("Username should be one word, letters, numbers, and underscores only.");
+                                $this.parent().parent().addClass("has-warning");
+                                $this.addClass(("form-control-warning"));
+                                $this.parent().parent().removeClass("has-success");
+                                $this.removeClass(("form-control-success"));
+                            }
+
+                        }
+                        enableSubmit();
+                        disabledSubmit();
+                    }
+                });
+            }
+        }
+    });
+
+    $('#email').focusout(function() {
+        enableSubmit();
+        disabledSubmit();
+        var $this = $(this);
+        if($($this).val().length === 0) {
+            clearTimeout(timer);
+            $('#email-error').text("");
+            $this.parent().parent().removeClass("has-warning");
+            $this.removeClass("form-control-warning");
+        }
+    });
+
+    var $password = $('#password');
+    var $password2 = $('#password2');
+
+    var $passwordError = $('#password-error');
+    var $password2Error = $('#password2-error');
+
+    $password.keyup(function() {
+        enableSubmit();
+        disabledSubmit();
+        if ($password.val().length < 6 ) {
+            $passwordError.text("Password length must be 6 or more");
+            $password.parent().parent().addClass("has-warning");
+            $password.addClass("form-control-warning");
+            $password.parent().parent().removeClass("has-success");
+            $password.removeClass("form-control-success");
+        } else {
+            $passwordError.text("");
+            $password.parent().parent().addClass("has-success");
+            $password.addClass("form-control-success");
+            $password.parent().parent().removeClass("has-warning");
+            $password.removeClass("form-control-warning");
+        }
+        if ($password2.val().length > 0) {
+            if ($password2.val() !== $password.val()) {
+                $password2Error.text("Passwords must match");
+                $password2.parent().parent().addClass("has-danger");
+                $password2.addClass("form-control-danger");
+                $password2.parent().parent().removeClass("has-success");
+                $password2.removeClass("form-control-success");
+            } else {
+                $password2Error.text("");
+                $password2.parent().parent().addClass("has-success");
+                $password2.addClass("form-control-success");
+                $password2.parent().parent().removeClass("has-danger");
+                $password2.removeClass("form-control-danger");
+            }
+        }
+    });
+
+    $password2.keyup(function() {
+
+        if ($password2.val() !== $password.val()) {
+            passwordsMatch = false;
+            $password2Error.text("Passwords must match");
+            $password2.parent().parent().addClass("has-danger");
+            $password2.addClass("form-control-danger");
+            $password2.parent().parent().removeClass("has-success");
+            $password2.removeClass("form-control-success");
+        } else {
+            passwordsMatch = true;
+            $password2Error.text("");
+            $password2.parent().parent().addClass("has-success");
+            $password2.addClass("form-control-success");
+            $password2.parent().parent().removeClass("has-danger");
+            $password2.removeClass("form-control-danger");
+        }
+        enableSubmit();
+        disabledSubmit();
+    });
+
+    $password.focusout(function() {
+        if ($password.val().length == 0) {
+            $passwordError.text("");
+            $password.parent().parent().removeClass("has-warning");
+            $password.removeClass("form-control-warning");
+            $password.parent().parent().removeClass("has-success");
+            $password.removeClass("form-control-success");
+        }
+        enableSubmit();
+        disabledSubmit();
+    });
+
+    $password2.focusout(function() {
+
+        if ($password2.val().length == 0) {
+            $password2Error.text("");
+            $password2.parent().parent().removeClass("has-danger");
+            $password2.removeClass("form-control-danger");
+            $password2.parent().parent().removeClass("has-success");
+            $password2.removeClass("form-control-success");
+        }
+        enableSubmit();
+        disabledSubmit();
+    });
+
+    </script>
+{% endblock %}

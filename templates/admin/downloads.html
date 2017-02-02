@@ -1,0 +1,80 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="container">
+    <div id="accordion">
+        {% for item in all_downloads %}
+            <h3>{{ item[0] }} <span class="tag tag-pill tag-danger">{{ item[1] | length }}</span></h3>
+            <div>
+            <table class="table hidden-sm-down table-sm">
+                <thead>
+                    <tr>
+                        <th class="mr-2 hidden-lg-down"># <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+                        <th>Options</th>
+                        <th>File Name <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+                        <th>Downloaded at <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                {% for file in item[1] %}
+                    <tr>
+                        <th scope="row" class="hidden-lg-down">{{ file.id }}</th>
+                        {% if "Archive" in item[0] %}
+                            <td>
+                                <a href="{{ url_for('downloads', directory=get_path(item[0]), filename=file.file.file_name,
+                                                    version=file.file.version) }}" download="{{ file.file.file_name }}">download</a>
+                            </td>
+                        {% else %}
+                            <td>
+                                <a href="{{ url_for('downloads', directory=get_path(item[0]),
+                                            filename=file.file.file_name) }}" download="{{ file.file.file_name }}">download</a>
+                            </td>
+                        {% endif %}
+                        {% if file.file.file_name|length > 15 %}
+                            <td><a tabindex="0" class="pop-toggle" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="{{ file.file.file_name }}">
+                               {{ file.file.file_name[:16] + '...' +  file.file.file_name[file.file.file_name|length - 9: -1] + file.file.file_name[-1]}}</a></td>
+                        {% else %}
+                            <td>{{ file.file.file_name }}</td>
+                        {% endif %}
+                        <td> {{ file.downloaded_at.strftime('%Y-%m-%d %I:%M:%p') }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            <ul class="list-group">
+                {% for file in item[1] %}
+                    <li class="list-group-item">
+                        <span>Name: <br> {{ file.file.file_name }}</span>
+                        {% if "Archive" in item[1] %}
+                            <a href="{{ url_for('downloads', directory=get_path(item[0]), filename=file.file.file_name,
+                                                    version=file.file.version) }}" download="{{ file.file.file_name }}">download</a>
+                        {% else %}
+                            <a href="{{ url_for('downloads', directory=get_path(item[0]),
+                                            filename=file.file.file_name) }}" download="{{ file.file.file_name }}">download</a>
+                        {% endif %}
+                        <div class="pt-2">Downloaded by: {{ file.downloaded_by.username }}</div>
+                        <div class="pt-2">Downloaded at: {{ file.downloaded_at.strftime('%Y-%m-%d %I:%M:%p') }}</div>
+                    </li>
+                {% endfor %}
+            </ul>
+
+            </div>
+        {% endfor %}
+    </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script>
+    $(function() {
+
+    $("#accordion").accordion({
+        collapsible: true
+    });
+    $('.pop-toggle').popover({
+        trigger: "focus"
+    })
+});
+    </script>
+{% endblock %}

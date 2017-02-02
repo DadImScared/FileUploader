@@ -1,0 +1,13 @@
+
+<div style="background-color: #2B303A; width:80%; border-radius: 5px; margin: 0 auto; text-align: center; padding-top: 25px; padding-bottom: 25px; padding-left: 10px; padding-right: 10px;">
+    <div style="padding: 25px; background-color: #92DCE5; border-radius: 5px;">
+<p>Dear {{ user.username }}</p>
+        <p>Thank you for registering, Please click</p>
+<div style="padding-top: 15px;"><a href="{{ url_for('confirm_email', token=token, _external=True) }}"><button
+style="border-radius: 5px;color: white; min-width: 20%; padding: 10px; border:none; background-color: #3423A6;">
+    Here
+</button></a>
+</div>
+        <p>to confirm your email</p>
+        </div>
+    </div>

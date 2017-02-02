@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>{% block title %}Test{% endblock %}</title>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div id="message" class="text-xs-center">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade in" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">x</button>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css" integrity="sha384-AysaV+vQoT3kOAXZkl02PThvDr8HYKPZhNT5h/CXfBThSRXQ6jW5DO2ekP5ViFdi" crossorigin="anonymous">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/main.css">
+
+
+</head>
+<body>
+<div id="banner">
+<div class="container">
+<img src="http://srilanarayanmaharaja.com/wp-content/uploads/2016/01/cen1-e1451968133658.jpg" class="img-fluid">
+</div>
+</div>
+
+<div id="mobile-sticky-nav" class="hidden-md-up">
+    <div class="container">
+            <span onclick="openNav()"><i class="fa fa-bars" aria-hidden="true"></i></span>
+    </div>
+</div>
+
+<div id="mySidenav" class="sidenav hidden-md-up">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    <a href="{{ url_for('admin_index') }}">Home</a>
+    <a href="{{ url_for('users') }}">Users</a>
+    <a href="{{ url_for('admin_files') }}">Files</a>
+    <a href="{{ url_for('archive_files') }}">Archive</a>
+    <a href="{{ url_for('register_users') }}">Register user</a>
+    <a href="{{ url_for('index') }}">Main page</a>
+    <a href="{{ url_for('users', id=g.user.id) }}">Profile</a>
+    <a href="{{ url_for('edit_user') }}">Settings</a>
+</div>
+
+<nav id="main-sticky-nav" class="navbar navbar-dark bg-faded hidden-sm-down">
+    <div class="container">
+        <ul class="nav navbar-nav">
+            <li class="nav-item">
+              <a id="admin-home" class="nav-link" href="{{ url_for('admin_index') }}">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+              <a id="admin-users" class="nav-link" href="{{ url_for('users') }}">Users</a>
+            </li>
+            <li class="nav-item">
+              <a id="admin-files" class="nav-link" href="{{ url_for('admin_files') }}">Files</a>
+            </li>
+            <li class="nav-item">
+              <a id="admin-register-user" class="nav-link" href="{{ url_for('register_users') }}">Register user</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('index') }}">Main Page</a>
+            </li>
+            <li class="nav-item">
+                <a id="admin-archive" class="nav-link" href="{{ url_for('archive_files') }}">Archive</a>
+            </li>
+            <li class="nav-item dropdown float-xs-right">
+                  <a class="nav-link dropdown-toggle" href="http://example.com" id="supportedContentDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-cog" aria-hidden="true"></i></a>
+                  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="supportedContentDropdown">
+                    <a class="dropdown-item" href="#">Action</a>
+                    <a class="dropdown-item" href="{{ url_for('edit_user') }}">Settings</a>
+                    <a class="dropdown-item" href="#">Something else here</a>
+                  </div>
+            </li>
+            <li class="nav-item float-xs-right">
+                <a class="nav-link" href="{{ url_for('logout') }}">Log Out</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+{% block content %}{% endblock %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha384-3ceskX3iaEnIogmQchP8opvBy3Mi7Ce34nWjpBIwVTHfGYWQS9jwHDVRnpKKHJg7" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.3.7/js/tether.min.js" integrity="sha384-XTs3FgkjiBgo8qjEjBk0tGmf3wPrWtA6coPfQDfFEY8AnYJwjalXCiosYRBIBZX8" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/js/bootstrap.min.js" integrity="sha384-BLiI7JTZm+JWlgKa0M0kGRpJbF2J8q+qreVrKBC47e3K6BW78kGLrCkeRX6I9RoK" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.sticky/1.0.3/jquery.sticky.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.28.1/js/jquery.tablesorter.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
+<script>
+    $('#main-sticky-nav').sticky();
+    $('#main-sticky-nav').on('sticky-start', function() {
+        $(this).css("background-color", "#DB4C40");
+    });
+    $('#main-sticky-nav').on('sticky-end', function() {
+        $(this).css("background-color", "transparent");
+    });
+
+    console.log(window.location.pathname)
+    if (window.location.pathname == "/admin/") {
+        $('#admin-home').addClass("active");
+    } else if (window.location.pathname == "/admin/users") {
+        $('#admin-users').addClass("active");
+    } else if (window.location.pathname == "/admin/files") {
+        $('#admin-files').addClass("active");
+    } else if (window.location.pathname == "/admin/register") {
+        $('#admin-register-user').addClass("active");
+    } else if (window.location.pathname == "/admin/archive") {
+        $('#admin-archive').addClass("active");
+    }
+</script>
+{% block scripts %}{% endblock %}
+<script>
+function openNav() {
+    document.getElementById("mySidenav").style.width = "250px";
+}
+
+function closeNav() {
+    document.getElementById("mySidenav").style.width = "0";
+}
+</script>
+</body>
+</html>

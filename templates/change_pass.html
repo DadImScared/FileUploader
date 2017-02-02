@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% from "macros.html" import render_field %}
+
+{% block content %}
+    <div class="container">
+        <form method="POST" action="{{ url_for('change_password') }}" class="form row">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ render_field(form.password, class="form-control", type="password") }}
+            </div>
+            <div class="form-group">
+                {{ render_field(form.password2, class="form-control", type="password") }}
+            </div>
+            <button type="submit" class="btn btn-block">Submit</button>
+        </form>
+    </div>
+{% endblock %}

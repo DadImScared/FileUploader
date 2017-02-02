@@ -1,0 +1,247 @@
+{% extends "layout.html" %}
+{% from 'macros.html' import render_field %}
+
+{% block content %}
+
+
+{% if current_user.is_authenticated and current_user.admin_confirmed and current_user.email_confirmed %}
+    <div class="px-1">
+    <div id="main-body" class="container mt-2 py-2 text-xs-center">
+        <div class="row">
+            <div class="col-md-3">
+                <p>instructions here</p>
+                <p>instructions here</p>
+                <p>instructions here</p>
+                <p>instructions here</p>
+                <p>instructions here</p>
+            </div>
+            <div class="col-md-6">
+                <form method="POST" class="form" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+
+        {#                    <label class="form-check-inline">#}
+        {#                        {{ render_field(form.type_choice.subtitle, class_="form-check-input") }}#}
+        {#                    </label>#}
+
+                        {% for subfield in form.type_choice %}
+                            <label class="form-check-inline">
+        {#                    {{ subfield(class_='form-check-input') }}#}
+        {#                    {{ subfield.label }}#}
+
+                                {{ render_field(subfield,  required='required') }}
+                                <span id="check-text">{{ subfield.label }}</span>
+
+
+                            </label>
+                        {% endfor %}
+
+
+                        <div class="form-group">
+                            <div class="row pb-1">
+                                <div class="col-lg-10 offset-lg-1">
+                                {{ render_field(form.directory_choices, class='custom-select form-control') }}
+                                    </div>
+                                </div>
+                                {{ render_field(form.upload, class='form-control-file col-lg-10 offset-lg-1') }}
+                        </div>
+
+
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="pt-2 mx-2">
+                                    <button id="submit" type="submit" class="btn col-xs-12">Submit</button>
+                                </div>
+                            </div>
+                        </div>
+
+                </form>
+            </div>
+            <div class="col-md-3">
+                <p>more stuff here</p>
+                <p>more stuff here</p>
+                <p>more stuff here</p>
+                <p>more stuff here</p>
+                <p>more stuff here</p>
+            </div>
+        </div>
+
+    </div>
+    <div id="audioAndVideo" class="container my-2 py-2">
+        <div class="row">
+            <div id="audio-files" class="col-sm-12 col-md-6">
+                <ul id="audio-list" class="list-group text-white">
+                    {% for file in audio_files %}
+                        <li id="{{ file.id }}" class="list-group-item audio-list-item">
+                        <span class="audio-file-name">{{ file.file_name }}</span>
+                        <div class="audio-file-link">{{ file.file_link }}</div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div id="video-files" class="col-sm-12 col-md-6">
+                <ul id="video-list" class="list-group text-white">
+                    {% for file in video_files %}
+                        <li id="{{ file.id }}" class="list-group-item video-list-item">
+                        <span class="video-file-name">{{ file.file_name }}</span>
+                        <div class="video-file-link">{{ file.file_link }}</div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    </div>
+    {% endif %}
+<!-- Modal -->
+<div class="modal fade bd-example-modal-lg" id="videoModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="videoModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="video-modal-body">
+          <div class="embed-responsive embed-responsive-21by9">
+            <iframe
+                src="https://www.youtube.com/watch?v=O0uSMj0nArM&feature=youtu.be">
+            </iframe>
+          </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" id="videoButton" class="btn btn-primary col-xs-6 offset-xs-3">Get Started!</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="audioModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="audioModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="audio-modal-body text-xs-center">
+
+            <audio id="player" controls>
+                <source src="http://sbnmcd.org/All_mp3/1992-09-01%20Srila%20Gurudeva%20darshan%20in%20English%20about%20Venu%20Gita.MP3" type="audio/mpeg">
+                <source src="" id="wav-player" type="audio/wav">
+            </audio>
+
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" id="audioButton" class="btn btn-primary col-xs-6 offset-xs-3">Get Started!</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}
+{# ADD FUNCTION TO CHANGE COLOR OF ERROR BACKGROUND DIV#}
+{% block scripts %}
+    <script>
+    var fileName;
+    var fileId;
+    var regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    var match;
+    var link = "https://www.youtube.com/embed/";
+    var videoCode;
+    var fullVideo;
+    var audioLink;
+    var audio = $('#player');
+    var fileType;
+    console.log(audio[0]);
+{#    audio[0].play();#}
+
+    function getVideoId(video) {
+        match = video.match(regExp);
+        if (match && match[2].length == 11) { return match[2];
+        } else {
+            return "error"
+        }
+    }
+
+    function makeList(id, type, name, link) {
+        if (type == "Audio") {
+            $('#audio-list').append(`<li id=${id} class="list-group-item audio-list-item">
+            <span class="audio-file-name">${name}</span>
+            <div class="audio-file-link">${link}</div></li>`);
+        } else if (type == "Video") {
+            $('#video-list').append(`<li id=${id} class="list-group-item video-list-item">
+            <span class="video-file-name">${name}</span>
+            <div class="video-file-link">${link}</div></li>`);
+        }
+    }
+
+
+{#    if ($('.form-control-feedback').length) {#}
+{#        $('.form-control-feedback').addClass("home-errors");#}
+{#    }#}
+
+    $(document).on('click', 'li', function() {
+        fileId = $(this).attr('id');
+        console.log(fileId);
+        if ($(this).hasClass("video-list-item")) {
+            var videoLink = $(this).children(".video-file-link").text();
+            fileName = $(this).children(".video-file-name").text();
+{#            $('.video-modal-body').text($(this).text());#}
+            videoCode = getVideoId(videoLink);
+            fileType = "Video";
+            console.log(fileName);
+            $('#videoModal').modal('toggle');
+        } else if ($(this).hasClass("audio-list-item")) {
+            fileName = $(this).children('.audio-file-name').text();
+            audioLink = $(this).children('.audio-file-link').text()
+            audio.children(':first-child').attr('src', audioLink);
+            audio[0].pause();
+            audio[0].load();
+            audio[0].oncanplaythrough = audio[0].play();
+            fileType = "Audio";
+            $('#audioModal').modal('toggle');
+            $('#audioModalLabel').text(fileName);
+        }
+    });
+
+
+    $('#videoButton, #audioButton').click(function() {
+        var info = {'fileName': fileName, 'fileType': fileType};
+        $.ajax({
+            type: "POST",
+            url: "{{ url_for('get_started') }}",
+            data: JSON.stringify(info, null, '\t'),
+            contentType: 'application/json;charset=UTF-8',
+            success: function(result) {
+                $('#'+fileId).remove();
+                makeList(result['id'], fileType, result['fileName'], result['fileLink']);
+
+            }
+        });
+    });
+
+    $('#audioModal').on('show.bs.modal', function () {
+        audio[0].pause();
+    });
+
+
+    $('#audioModal').on('hide.bs.modal', function () {
+        audio[0].pause();
+    });
+
+    $('#videoModal').on('show.bs.modal', function() {
+        fullVideo = link + videoCode;
+        $('iframe').attr("src", fullVideo);
+        $('#videoModalLabel').text(fileName);
+    });
+
+    $('.form-control-feedback').addClass('home-errors');
+    </script>
+{% endblock %}

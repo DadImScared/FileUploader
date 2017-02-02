@@ -1,0 +1,700 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    {% if g.user.has_role('admin') or g.user.id == user.id %}
+    <div class="container">
+        <h1>{{ user.username }}'s profile</h1>
+    <div class="row">
+        <div id="accordion" class="col-xs-12">
+            {% for outter in all_files %}
+                {% for item in all_files[outter] %}
+                    {% if item[1] %}
+                        <h3>{{ item[0] }} <span class="tag tag-pill tag-danger">{{ item[1] | length }}</span></h3>
+                        <div>
+                        <table class="table hidden-sm-down table-sm">
+                        <thead class="w-100">
+                            <tr>
+                                <th class="mr-2 hidden-lg-down"># <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+                                <th>Options</th>
+                                <th>File Name <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+                                {% if "Downloads" in item[0] %}
+                                    <th>Downloaded at <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+                                {% else %}
+                                <th>Uploaded at <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+                                <th>Worked on <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for file in item[1] %}
+                            <tr >
+                                <th scope="row" class="hidden-lg-down">{{ file.id }}</th>
+
+
+
+                                {% if not "Downloads" in item[0] %}
+                                    {% if "Archive" in item[0] %}
+                                        <td><a href="{{ url_for('downloads', directory=get_path(item[0]), filename=file.file_name, version=file.version ) }}" download="{{ file.file_name }}">download</a></td>
+                                    {% else %}
+                                        <td><a href="{{ url_for('downloads', directory=get_path(item[0]), filename=file.file_name) }}" download="{{ file.file_name }}">
+                                            downloads
+                                        </a></td>
+                                    {% endif %}
+                                    {% if file.file_name|length > 15 %}
+                                    <td><a tabindex="0" class="pop-toggle" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="{{ file.file_name }}">
+                                       {{ file.file_name[:16] + '...' +  file.file_name[file.file_name|length - 9: -1] + file.file_name[-1]}}</a></td>
+                                    {% else %}
+                                    <td>{{ file.file_name }}</td>
+                                    {% endif %}
+                                <td> {{ file.uploaded_at.strftime('%Y-%m-%d %I:%M:%p') }}</td>
+                                <td>{{ file.worked_on }}</td>
+                                {% else %}
+                                    {% if "Archive" in item[0] %}
+                                        <td>
+                                            <a href="{{ url_for('downloads', directory=get_path(item[0]), filename=file.file.file_name,
+                                                    version=file.file.version) }}" download="{{ file.file.file_name }}">download</a>
+                                        </td>
+                                    {% else %}
+                                        <td>
+                                            <a href="{{ url_for('downloads', directory=get_path(item[0]),
+                                            filename=file.file.file_name) }}" download="{{ file.file.file_name }}">download</a>
+                                        </td>
+                                    {% endif %}
+                                    {% if file.file.file_name|length > 15 %}
+                                    <td><a tabindex="0" class="pop-toggle" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="{{ file.file.file_name }}">
+                                       {{ file.file.file_name[:16] + '...' +  file.file.file_name[file.file.file_name|length - 9: -1] + file.file.file_name[-1]}}</a></td>
+                                    {% else %}
+                                    <td>{{ file.file.file_name }}</td>
+                                    {% endif %}
+                                    <td> {{ file.downloaded_at.strftime('%Y-%m-%d %I:%M:%p') }}</td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                        </table>
+                            <ul class="list-group mobile-profile-list hidden-md-up">
+                                {% for file in item[1] %}
+                                    {% if "Downloads" in item[0] %}
+                                        <li class="list-group-item download-item">
+                                            <span class="filename-download">{{ file.file.file_name }}</span>
+                                            <div class="time-download">{{ file.downloaded_at.strftime('%Y-%m-%d %I:%M:%p') }}</div>
+                                            {% if "Archive" in item[0] %}
+                                                <a href="{{ url_for('downloads', directory=get_path(item[0]),
+                                                        filename=file.file.file_name, version=file.file.version) }}" download="{{ file.file.file_name }}" class="download-link">link</a>
+                                            {% else %}
+                                                <a href="{{ url_for('downloads', directory=get_path(item[0]),
+                                                        filename=file.file.file_name)}}" download="{{ file.file.file_name }}" class="download-link">link</a>
+                                            {% endif %}
+                                        </li>
+                                    {% else %}
+                                        <li class="list-group-item upload-item">
+                                            <span class="filename">{{ file.file_name }}</span>
+                                            {% if "Archive" in item[0] %}
+                                                <a href="{{ url_for('downloads', directory=get_path(item[0]),
+                                                        filename=file.file_name, version=file.version) }}" download="{{ file.file_name }}" class="download-link">link</a>
+                                            {% else %}
+                                                <a href="{{ url_for('downloads', directory=get_path(item[0]),
+                                                        filename=file.file_name)}}" download="{{ file.file_name }}" class="download-link">link</a>
+                                            {% endif %}
+                                            <div class="google-doc">{{ file.google_docs }}</div>
+                                            <div class="time">{{ file.uploaded_at.strftime('%Y-%m-%d %I:%M:%p') }}</div>
+                                            <div class="worked-on">{{ file.worked_on }}</div>
+                                        </li>
+                                    {% endif %}
+
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+
+{#            {% if stage_one_files %}#}
+{#                <h3 class="row">Stage One <span class="tag tag-pill tag-danger">{{ stage_one_files | length }}</span></h3>#}
+{#                <div>#}
+{#                    <table class="table hidden-sm-down table-sm">#}
+{#                        <thead class="w-100">#}
+{#                            <tr>#}
+{#                                <th class="mr-2 hidden-lg-down"># <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Options</th>#}
+{#                                <th>File Name <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Uploaded at <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Worked on <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                            </tr>#}
+{#                        </thead>#}
+{#                        <tbody>#}
+{#                        {% for file in stage_one_files %}#}
+{#                            <tr >#}
+{#                                <th scope="row" class="hidden-lg-down">{{ file.id }}</th>#}
+{#                                <td>options here</td>#}
+{#                                {% if file.file_name|length > 15 %}#}
+{#                                <td><a tabindex="0" class="pop-toggle" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="{{ file.file_name }}">#}
+{#                                   {{ file.file_name[:16] + '...' +  file.file_name[file.file_name|length - 9: -1] + file.file_name[-1]}}</a></td>#}
+{#                                {% else %}#}
+{#                                <td>{{ file.file_name }}</td>#}
+{#                                {% endif %}#}
+{#                                <td> {{ file.uploaded_at.strftime('%Y-%m-%d %I:%M:%p') }}</td>#}
+{#                                <td>{{ file.worked_on }}</td>#}
+{#                            </tr>#}
+{#                        {% endfor %}#}
+{#                        </tbody>#}
+{#                    </table>#}
+{##}
+{#                <ul class="list-group mobile-profile-list">#}
+{#                    {% for file in stage_one_files %}#}
+{#                        <li class="list-group-item">#}
+{#                            <span>{{ file.file_name }}</span>#}
+{#                            <div class="google-doc">{{ file.google_docs }}</div>#}
+{#                            <div class="time">{{ file.uploaded_at.strftime('%Y-%m-%d %I:%M:%p') }}</div>#}
+{#                            <div class="worked-on">{{ file.worked_on }}</div>#}
+{#                            <div class="uploaded-by">{{ file.uploaded_by.username }}</div>#}
+{#                        </li>#}
+{#                    {% endfor %}#}
+{#                </ul>#}
+{#                </div>#}
+{#            {% endif %}#}
+{#            {% if stage_two_files %}#}
+{#                <h3>Stage Two <span class="tag tag-pill tag-danger">{{ stage_two_files | length }}</span></h3>#}
+{#                <div>#}
+{#                    <table class="table hidden-sm-down table-sm">#}
+{#                        <thead>#}
+{#                            <tr>#}
+{#                                <th class="mr-2"># <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Options</th>#}
+{#                                <th>File Name <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Uploaded at <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Worked on <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                            </tr>#}
+{#                        </thead>#}
+{#                        <tbody>#}
+{#                        {% for file in stage_two_files %}#}
+{#                            <tr >#}
+{#                                <th scope="row">{{ file.id }}</th>#}
+{#                                <td>options here</td>#}
+{#                                {% if file.file_name|length > 15 %}#}
+{#                                <td><a tabindex="0" class="pop-toggle" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="{{ file.file_name }}">#}
+{#                                   {{ file.file_name[:16] + '...' +  file.file_name[file.file_name|length - 9: -1] + file.file_name[-1]}}</a></td>#}
+{#                                {% else %}#}
+{#                                <td>{{ file.file_name }}</td>#}
+{#                                {% endif %}#}
+{#                                <td> {{ file.uploaded_at.strftime('%Y-%m-%d %I:%M:%p') }}</td>#}
+{#                                <td>{{ file.worked_on }}</td>#}
+{#                            </tr>#}
+{#                        {% endfor %}#}
+{#                        </tbody>#}
+{#                    </table>#}
+{#                </div>#}
+{#            {% endif %}#}
+{#            {% if stage_three_files %}#}
+{#                <h3>Stage Three <span class="tag tag-pill tag-danger">{{ stage_three_files | length }}</span></h3>#}
+{#                <div>#}
+{#                    <table class="table hidden-sm-down table-sm">#}
+{#                        <thead>#}
+{#                            <tr>#}
+{#                                <th class="mr-2"># <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Options</th>#}
+{#                                <th>File Name <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Uploaded at <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Worked on <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                            </tr>#}
+{#                        </thead>#}
+{#                        <tbody>#}
+{#                        {% for file in stage_three_files %}#}
+{#                            <tr >#}
+{#                                <th scope="row">{{ file.id }}</th>#}
+{#                                <td>options here</td>#}
+{#                                {% if file.file_name|length > 15 %}#}
+{#                                <td><a tabindex="0" class="pop-toggle" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="{{ file.file_name }}">#}
+{#                                   {{ file.file_name[:16] + '...' +  file.file_name[file.file_name|length - 9: -1] + file.file_name[-1]}}</a></td>#}
+{#                                {% else %}#}
+{#                                <td>{{ file.file_name }}</td>#}
+{#                                {% endif %}#}
+{#                                <td> {{ file.uploaded_at.strftime('%Y-%m-%d %I:%M:%p') }}</td>#}
+{#                                <td>{{ file.worked_on }}</td>#}
+{#                            </tr>#}
+{#                        {% endfor %}#}
+{#                        </tbody>#}
+{#                    </table>#}
+{#                </div>#}
+{#            {% endif %}#}
+{#            {% if stage_four_files %}#}
+{#                <h3>Stage Four <span class="tag tag-pill tag-danger">{{ stage_four_files | length }}</span></h3>#}
+{#                <div>#}
+{#                    <table class="table hidden-sm-down table-sm">#}
+{#                        <thead>#}
+{#                            <tr>#}
+{#                                <th class="mr-2"># <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Options</th>#}
+{#                                <th>File Name <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Uploaded at <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Worked on <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                            </tr>#}
+{#                        </thead>#}
+{#                        <tbody>#}
+{#                        {% for file in stage_four_files %}#}
+{#                            <tr >#}
+{#                                <th scope="row">{{ file.id }}</th>#}
+{#                                <td>options here</td>#}
+{#                                {% if file.file_name|length > 15 %}#}
+{#                                <td><a tabindex="0" class="pop-toggle" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="{{ file.file_name }}">#}
+{#                                   {{ file.file_name[:16] + '...' +  file.file_name[file.file_name|length - 9: -1] + file.file_name[-1]}}</a></td>#}
+{#                                {% else %}#}
+{#                                <td>{{ file.file_name }}</td>#}
+{#                                {% endif %}#}
+{#                                <td> {{ file.uploaded_at.strftime('%Y-%m-%d %I:%M:%p') }}</td>#}
+{#                                <td>{{ file.worked_on }}</td>#}
+{#                            </tr>#}
+{#                        {% endfor %}#}
+{#                        </tbody>#}
+{#                    </table>#}
+{#                </div>#}
+{#            {% endif %}#}
+{#            {% if stage_one_downloads %}#}
+{#                <h3>Stage One Downloads <span class="tag tag-pill tag-danger">{{ stage_one_downloads | length }}</span></h3>#}
+{#                <div>#}
+{#                    <table class="table hidden-sm-down table-sm">#}
+{#                        <thead>#}
+{#                            <tr>#}
+{#                                <th class="mr-2"># <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Options</th>#}
+{#                                <th>File Name <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Uploaded at <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                            </tr>#}
+{#                        </thead>#}
+{#                        <tbody>#}
+{#                        {% for file in stage_one_downloads %}#}
+{#                            <tr >#}
+{#                                <th scope="row">{{ file.id }}</th>#}
+{#                                <td>options here</td>#}
+{#                                {% if file.file.file_name|length > 15 %}#}
+{#                                <td><a tabindex="0" class="pop-toggle" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="{{ file.file.file_name }}">#}
+{#                                   {{ file.file.file_name[:16] + '...' +  file.file.file_name[file.file.file_name|length - 9: -1] + file.file.file_name[-1]}}</a></td>#}
+{#                                {% else %}#}
+{#                                <td>{{ file.file.file_name }}</td>#}
+{#                                {% endif %}#}
+{#                                <td> {{ file.downloaded_at.strftime('%Y-%m-%d %I:%M:%p') }}</td>#}
+{##}
+{#                            </tr>#}
+{#                        {% endfor %}#}
+{#                        </tbody>#}
+{#                    </table>#}
+{#                </div>#}
+{#            {% endif %}#}
+{#            {% if stage_two_downloads %}#}
+{#                <h3>Stage Two Downloads <span class="tag tag-pill tag-danger">{{ stage_two_downloads | length }}</span></h3>#}
+{#                <div>#}
+{#                    <table class="table hidden-sm-down table-sm">#}
+{#                        <thead>#}
+{#                            <tr>#}
+{#                                <th class="mr-2"># <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Options</th>#}
+{#                                <th>File Name <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Uploaded at <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                            </tr>#}
+{#                        </thead>#}
+{#                        <tbody>#}
+{#                        {% for file in stage_two_downloads %}#}
+{#                            <tr >#}
+{#                                <th scope="row">{{ file.id }}</th>#}
+{#                                <td>options here</td>#}
+{#                                {% if file.file.file_name|length > 15 %}#}
+{#                                <td><a tabindex="0" class="pop-toggle" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="{{ file.file.file_name }}">#}
+{#                                   {{ file.file.file_name[:16] + '...' +  file.file.file_name[file.file.file_name|length - 9: -1] + file.file.file_name[-1]}}</a></td>#}
+{#                                {% else %}#}
+{#                                <td>{{ file.file_name }}</td>#}
+{#                                {% endif %}#}
+{#                                <td> {{ file.downloaded_at.strftime('%Y-%m-%d %I:%M:%p') }}</td>#}
+{#                            </tr>#}
+{#                        {% endfor %}#}
+{#                        </tbody>#}
+{#                    </table>#}
+{#                </div>#}
+{#            {% endif %}#}
+{#            {% if stage_three_downloads %}#}
+{#                <h3>Stage Three Downloads <span class="tag tag-pill tag-danger">{{ stage_three_downloads | length }}</span></h3>#}
+{#                <div>#}
+{#                    <table class="table hidden-sm-down table-sm">#}
+{#                        <thead>#}
+{#                            <tr>#}
+{#                                <th class="mr-2"># <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Options</th>#}
+{#                                <th>File Name <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Uploaded at <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                            </tr>#}
+{#                        </thead>#}
+{#                        <tbody>#}
+{#                        {% for file in stage_three_downloads %}#}
+{#                            <tr >#}
+{#                                <th scope="row">{{ file.id }}</th>#}
+{#                                <td>options here</td>#}
+{#                                {% if file.file.file_name|length > 15 %}#}
+{#                                <td><a tabindex="0" class="pop-toggle" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="{{ file.file.file_name }}">#}
+{#                                   {{ file.file.file_name[:16] + '...' +  file.file.file_name[file.file_name|length - 9: -1] + file.file.file_name[-1]}}</a></td>#}
+{#                                {% else %}#}
+{#                                <td>{{ file.file.file_name }}</td>#}
+{#                                {% endif %}#}
+{#                                <td> {{ file.downloaded_at.strftime('%Y-%m-%d %I:%M:%p') }}</td>#}
+{#                            </tr>#}
+{#                        {% endfor %}#}
+{#                        </tbody>#}
+{#                    </table>#}
+{#                </div>#}
+{#            {% endif %}#}
+{#            {% if stage_four_downloads %}#}
+{#                <h3>Stage Four Downloads <span class="tag tag-pill tag-danger">{{ stage_four_downloads | length }}</span></h3>#}
+{#                <div>#}
+{#                    <table class="table hidden-sm-down table-sm">#}
+{#                        <thead>#}
+{#                            <tr>#}
+{#                                <th class="mr-2"># <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Options</th>#}
+{#                                <th>File Name <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Uploaded at <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                            </tr>#}
+{#                        </thead>#}
+{#                        <tbody>#}
+{#                        {% for file in stage_four_downloads %}#}
+{#                            <tr >#}
+{#                                <th scope="row">{{ file.id }}</th>#}
+{#                                <td>options here</td>#}
+{#                                {% if file.file.file_name|length > 15 %}#}
+{#                                <td><a tabindex="0" class="pop-toggle" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="{{ file.file.file_name }}">#}
+{#                                   {{ file.file.file_name[:16] + '...' +  file.file.file_name[file.file.file_name|length - 9: -1] + file.file.file_name[-1]}}</a></td>#}
+{#                                {% else %}#}
+{#                                <td>{{ file.file.file_name }}</td>#}
+{#                                {% endif %}#}
+{#                                <td> {{ file.downloaded_at.strftime('%Y-%m-%d %I:%M:%p') }}</td>#}
+{##}
+{#                            </tr>#}
+{#                        {% endfor %}#}
+{#                        </tbody>#}
+{#                    </table>#}
+{#                </div>#}
+{#            {% endif %}#}
+{#            {% if stage_one_archive %}#}
+{#                <h3>Stage One Archive <span class="tag tag-pill tag-danger">{{ stage_one_archive | length }}</span></h3>#}
+{#                <div>#}
+{#                    <table class="table hidden-sm-down table-sm">#}
+{#                        <thead>#}
+{#                            <tr>#}
+{#                                <th class="mr-2"># <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Options</th>#}
+{#                                <th>File Name <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Uploaded at <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Worked on <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                            </tr>#}
+{#                        </thead>#}
+{#                        <tbody>#}
+{#                        {% for file in stage_one_archive %}#}
+{#                            <tr >#}
+{#                                <th scope="row">{{ file.id }}</th>#}
+{#                                <td>options here</td>#}
+{#                                {% if file.file_name|length > 15 %}#}
+{#                                <td><a tabindex="0" class="pop-toggle" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="{{ file.file_name }}">#}
+{#                                   {{ file.file_name[:16] + '...' +  file.file_name[file.file_name|length - 9: -1] + file.file_name[-1]}}</a></td>#}
+{#                                {% else %}#}
+{#                                <td>{{ file.file_name }}</td>#}
+{#                                {% endif %}#}
+{#                                <td> {{ file.uploaded_at.strftime('%Y-%m-%d %I:%M:%p') }}</td>#}
+{#                                <td>{{ file.worked_on }}</td>#}
+{#                            </tr>#}
+{#                        {% endfor %}#}
+{#                        </tbody>#}
+{#                    </table>#}
+{#                </div>#}
+{#            {% endif %}#}
+{#            {% if stage_two_archive %}#}
+{#                <h3>Stage Two Archive <span class="tag tag-pill tag-danger">{{ stage_two_archive | length }}</span></h3>#}
+{#                <div>#}
+{#                    <table class="table hidden-sm-down table-sm">#}
+{#                        <thead>#}
+{#                            <tr>#}
+{#                                <th class="mr-2"># <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Options</th>#}
+{#                                <th>File Name <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Uploaded at <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Worked on <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                            </tr>#}
+{#                        </thead>#}
+{#                        <tbody>#}
+{#                        {% for file in stage_two_archive %}#}
+{#                            <tr >#}
+{#                                <th scope="row">{{ file.id }}</th>#}
+{#                                <td>options here</td>#}
+{#                                {% if file.file_name|length > 15 %}#}
+{#                                <td><a tabindex="0" class="pop-toggle" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="{{ file.file_name }}">#}
+{#                                   {{ file.file_name[:16] + '...' +  file.file_name[file.file_name|length - 9: -1] + file.file_name[-1]}}</a></td>#}
+{#                                {% else %}#}
+{#                                <td>{{ file.file_name }}</td>#}
+{#                                {% endif %}#}
+{#                                <td> {{ file.uploaded_at.strftime('%Y-%m-%d %I:%M:%p') }}</td>#}
+{#                                <td>{{ file.worked_on }}</td>#}
+{#                            </tr>#}
+{#                        {% endfor %}#}
+{#                        </tbody>#}
+{#                    </table>#}
+{#                </div>#}
+{#            {% endif %}#}
+{#            {% if stage_three_archive %}#}
+{#                <h3>Stage Three Archive <span class="tag tag-pill tag-danger">{{ stage_three_archive | length }}</span></h3>#}
+{#                <div>#}
+{#                    <table class="table hidden-sm-down table-sm">#}
+{#                        <thead>#}
+{#                            <tr>#}
+{#                                <th class="mr-2"># <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Options</th>#}
+{#                                <th>File Name <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Uploaded at <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Worked on <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                            </tr>#}
+{#                        </thead>#}
+{#                        <tbody>#}
+{#                        {% for file in stage_three_archive %}#}
+{#                            <tr >#}
+{#                                <th scope="row">{{ file.id }}</th>#}
+{#                                <td>options here</td>#}
+{#                                {% if file.file_name|length > 15 %}#}
+{#                                <td><a tabindex="0" class="pop-toggle" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="{{ file.file_name }}">#}
+{#                                   {{ file.file_name[:16] + '...' +  file.file_name[file.file_name|length - 9: -1] + file.file_name[-1]}}</a></td>#}
+{#                                {% else %}#}
+{#                                <td>{{ file.file_name }}</td>#}
+{#                                {% endif %}#}
+{#                                <td> {{ file.uploaded_at.strftime('%Y-%m-%d %I:%M:%p') }}</td>#}
+{#                                <td>{{ file.worked_on }}</td>#}
+{#                            </tr>#}
+{#                        {% endfor %}#}
+{#                        </tbody>#}
+{#                    </table>#}
+{#                </div>#}
+{#            {% endif %}#}
+{#            {% if stage_four_archive %}#}
+{#                <h3>Stage Four Archive <span class="tag tag-pill tag-danger">{{ stage_four_archive | length }}</span></h3>#}
+{#                <div>#}
+{#                    <table class="table hidden-sm-down table-sm">#}
+{#                        <thead>#}
+{#                            <tr>#}
+{#                                <th class="mr-2"># <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Options</th>#}
+{#                                <th>File Name <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Uploaded at <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Worked on <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                            </tr>#}
+{#                        </thead>#}
+{#                        <tbody>#}
+{#                        {% for file in stage_four_archive %}#}
+{#                            <tr >#}
+{#                                <th scope="row">{{ file.id }}</th>#}
+{#                                <td>options here</td>#}
+{#                                {% if file.file_name|length > 15 %}#}
+{#                                <td><a tabindex="0" class="pop-toggle" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="{{ file.file_name }}">#}
+{#                                   {{ file.file_name[:16] + '...' +  file.file_name[file.file_name|length - 9: -1] + file.file_name[-1]}}</a></td>#}
+{#                                {% else %}#}
+{#                                <td>{{ file.file_name }}</td>#}
+{#                                {% endif %}#}
+{#                                <td> {{ file.uploaded_at.strftime('%Y-%m-%d %I:%M:%p') }}</td>#}
+{#                                <td>{{ file.worked_on }}</td>#}
+{#                            </tr>#}
+{#                        {% endfor %}#}
+{#                        </tbody>#}
+{#                    </table>#}
+{#                </div>#}
+{#            {% endif %}#}
+{#            {% if stage_one_archive_downloads %}#}
+{#                <h3>Stage One Archive Downloads <span class="tag tag-pill tag-danger">{{ stage_one_archive_downloads | length }}</span></h3>#}
+{#                <div>#}
+{#                    <table class="table hidden-sm-down table-sm">#}
+{#                        <thead>#}
+{#                            <tr>#}
+{#                                <th class="mr-2"># <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Options</th>#}
+{#                                <th>File Name <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Uploaded at <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                            </tr>#}
+{#                        </thead>#}
+{#                        <tbody>#}
+{#                        {% for file in stage_one_archive_downloads %}#}
+{#                            <tr >#}
+{#                                <th scope="row">{{ file.id }}</th>#}
+{#                                <td>options here</td>#}
+{#                                {% if file.file.file_name|length > 15 %}#}
+{#                                <td><a tabindex="0" class="pop-toggle" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="{{ file.file.file_name }}">#}
+{#                                   {{ file.file.file_name[:16] + '...' +  file.file.file_name[file.file.file_name|length - 9: -1] + file.file.file_name[-1]}}</a></td>#}
+{#                                {% else %}#}
+{#                                <td>{{ file.file.file_name }}</td>#}
+{#                                {% endif %}#}
+{#                                <td> {{ file.downloaded_at.strftime('%Y-%m-%d %I:%M:%p') }}</td>#}
+{##}
+{#                            </tr>#}
+{#                        {% endfor %}#}
+{#                        </tbody>#}
+{#                    </table>#}
+{#                </div>#}
+{#            {% endif %}#}
+{#            {% if stage_two_archive_downloads %}#}
+{#                <h3>Stage Two Archive Downloads <span class="tag tag-pill tag-danger">{{ stage_two_archive_downloads | length }}</span></h3>#}
+{#                <div>#}
+{#                    <table class="table hidden-sm-down table-sm">#}
+{#                        <thead>#}
+{#                            <tr>#}
+{#                                <th class="mr-2"># <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Options</th>#}
+{#                                <th>File Name <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Uploaded at <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                            </tr>#}
+{#                        </thead>#}
+{#                        <tbody>#}
+{#                        {% for file in stage_two_archive_downloads %}#}
+{#                            <tr >#}
+{#                                <th scope="row">{{ file.id }}</th>#}
+{#                                <td>options here</td>#}
+{#                                {% if file.file.file_name|length > 15 %}#}
+{#                                <td><a tabindex="0" class="pop-toggle" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="{{ file.file.file_name }}">#}
+{#                                   {{ file.file.file_name[:16] + '...' +  file.file.file_name[file.file.file_name|length - 9: -1] + file.file.file_name[-1]}}</a></td>#}
+{#                                {% else %}#}
+{#                                <td>{{ file.file.file_name }}</td>#}
+{#                                {% endif %}#}
+{#                                <td> {{ file.downloaded_at.strftime('%Y-%m-%d %I:%M:%p') }}</td>#}
+{##}
+{#                            </tr>#}
+{#                        {% endfor %}#}
+{#                        </tbody>#}
+{#                    </table>#}
+{#                </div>#}
+{#            {% endif %}#}
+{#            {% if stage_three_archive_downloads %}#}
+{#                <h3>Stage Three Archive Downloads <span class="tag tag-pill tag-danger">{{ stage_three_archive_downloads | length }}</span></h3>#}
+{#                <div>#}
+{#                    <table class="table hidden-sm-down table-sm">#}
+{#                        <thead>#}
+{#                            <tr>#}
+{#                                <th class="mr-2"># <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Options</th>#}
+{#                                <th>File Name <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Uploaded at <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                            </tr>#}
+{#                        </thead>#}
+{#                        <tbody>#}
+{#                        {% for file in stage_three_archive_downloads %}#}
+{#                            <tr >#}
+{#                                <th scope="row">{{ file.id }}</th>#}
+{#                                <td>options here</td>#}
+{#                                {% if file.file.file_name|length > 15 %}#}
+{#                                <td><a tabindex="0" class="pop-toggle" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="{{ file.file.file_name }}">#}
+{#                                   {{ file.file.file_name[:16] + '...' +  file.file.file_name[file.file.file_name|length - 9: -1] + file.file.file_name[-1]}}</a></td>#}
+{#                                {% else %}#}
+{#                                <td>{{ file.file.file_name }}</td>#}
+{#                                {% endif %}#}
+{#                                <td> {{ file.downloaded_at.strftime('%Y-%m-%d %I:%M:%p') }}</td>#}
+{##}
+{#                            </tr>#}
+{#                        {% endfor %}#}
+{#                        </tbody>#}
+{#                    </table>#}
+{#                </div>#}
+{#            {% endif %}#}
+{#            {% if stage_four_archive_downloads %}#}
+{#                <h3>Stage Four Archive Downloads <span class="tag tag-pill tag-danger">{{ stage_four_archive_downloads | length }}</span></h3>#}
+{#                <div>#}
+{#                    <table class="table hidden-sm-down table-sm">#}
+{#                        <thead>#}
+{#                            <tr>#}
+{#                                <th class="mr-2"># <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Options</th>#}
+{#                                <th>File Name <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                                <th>Uploaded at <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>#}
+{#                            </tr>#}
+{#                        </thead>#}
+{#                        <tbody>#}
+{#                        {% for file in stage_four_archive_downloads %}#}
+{#                            <tr >#}
+{#                                <th scope="row">{{ file.id }}</th>#}
+{#                                <td>options here</td>#}
+{#                                {% if file.file.file_name|length > 15 %}#}
+{#                                <td><a tabindex="0" class="pop-toggle" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="{{ file.file.file_name }}">#}
+{#                                   {{ file.file.file_name[:16] + '...' +  file.file.file_name[file.file.file_name|length - 9: -1] + file.file.file_name[-1]}}</a></td>#}
+{#                                {% else %}#}
+{#                                <td>{{ file.file.file_name }}</td>#}
+{#                                {% endif %}#}
+{#                                <td> {{ file.downloaded_at.strftime('%Y-%m-%d %I:%M:%p') }}</td>#}
+{##}
+{#                            </tr>#}
+{#                        {% endfor %}#}
+{#                        </tbody>#}
+{#                    </table>#}
+{#                </div>#}
+{#            {% endif %}#}
+        </div>
+    </div>
+    </div>
+    {% endif %}
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid">
+            <div id="mb" class="row">
+
+            </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script>
+$(function() {
+
+    $("#accordion").accordion({
+        collapsible: true
+    });
+    $('.pop-toggle').popover({
+        trigger: "focus"
+    })
+});
+
+    var name = '<div id="file-name" class="col-xs-6"></div>';
+    var googleDoc = '<div id="google-doc" class="col-xs-6"></div>';
+    var workedOn = '<div id="worked-on" class="col-xs-6"></div>';
+    var time = '<div id="time" class="col-xs-6"></div>';
+    var downloadName = '<div id="filename-download" class="col-xs-6"></div>';
+    var downloadTime = '<div id="time-download" class="col-xs-6"></div>';
+    var link = '<a id="link" class="col-xs-6">link</a>';
+    var $modal = $('.modal');
+
+$('.mobile-profile-list li').click(function() {
+    var $this = $(this);
+    if ($this.hasClass("upload-item")) {
+        $('#mb').append(name, googleDoc, link);
+        $('#file-name').text("Name: " + $this.children('.filename').text());
+{#        $('#google-doc').text($this.children('.google-doc').text());#}
+        $('#link').attr("download", $this.children('.filename').text()).attr("href", $this.children(".download-link").attr("href"));
+
+    }
+    if ($this.hasClass("download-item")) {
+        $('#mb').append(downloadName, downloadTime, link);
+        $('#filename-download').text("Name: " + $this.children('.filename-download').text());
+        $('#link').attr("download", $this.children('.filename-download').text()).attr("href", $this.children(".download-link").attr("href"));
+        $('#time-download').text($this.children('.time-download').text());
+    }
+
+    $modal.on('hide.bs.modal', function() {
+        $('#mb').children().remove();
+    });
+
+    $modal.modal('toggle');
+
+});
+</script>
+{% endblock %}

@@ -1,0 +1,356 @@
+{% extends "layout.html" %}
+
+{% block content %}
+{% if current_user.is_authenticated and current_user.admin_confirmed %}
+    <div class="container pt-2">
+
+    <nav id="sticky-nav" class="navbar navbar-dark hidden-sm-down">
+{#    <div class="container">#}
+        <ul class="tab nav navbar-nav">
+            <li class="nav-item"><a href="javascript:void(0)" class="tablinks nav-link" onclick="openContent(event, 'stageone')">Stage One</a></li>
+            {% if g.user.has_role('stagefour') or g.user.has_role('admin') or g.user.has_role('superadmin') %}
+                <li class="nav-item"><a href="javascript:void(0)" class="tablinks nav-link" onclick="openContent(event, 'stagetwo')">Stage Two</a></li>
+                <li class="nav-item"><a href="javascript:void(0)" class="tablinks nav-link" onclick="openContent(event, 'stagethree')">Stage Three</a></li>
+                <li class="nav-item"><a href="javascript:void(0)" class="tablinks nav-link" onclick="openContent(event, 'stagefour')">Stage Four</a></li>
+            {% elif g.user.has_role('stagethree') %}
+                <li class="nav-item"><a href="javascript:void(0)" class="tablinks nav-link" onclick="openContent(event, 'stagetwo')">Stage Two</a></li>
+                <li class="nav-item"><a href="javascript:void(0)" class="tablinks nav-link" onclick="openContent(event, 'stagethree')">Stage Three</a></li>
+            {% elif g.user.has_role('stagetwo') %}
+                <li class="nav-item"><a href="javascript:void(0)" class="tablinks nav-link" onclick="openContent(event, 'stagetwo')">Stage Two</a></li>
+            {% endif %}
+        </ul>
+{#    </div>#}
+    </nav>
+
+    <!-- STAGE ONE FILES -->
+    <div id="stageone" class="tabcontent table-responsive hidden-sm-down">
+
+    <table class="table table-hover table-bordered">
+    <thead>
+        <tr class="table-head-row" >
+            <th class="hidden-lg-down"># <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+            <th>Options </th>
+            <th class="hidden-lg-down">Uploader <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+            <th>File Name <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+            <th>File type<i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+            <th class="hidden-md-down">Uploaded at <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+            {% if g.user.has_role('admin') or g.user.has_role('superadmin') %}
+            <th>Worked on <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+            {% endif %}
+            {% if stage_one_doc.count() %}
+                <td>Google Doc link</td>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+    {% for file in stage_one %}
+        <tr>
+            <th class="hidden-lg-down" scope="row">{{ file.id }}</th>
+            <td class="download-space">
+                <a href="{{ url_for('downloads', directory=path_one, filename=file.file_name)}}" download="{{ file.file_name }}">
+                <i class="fa fa-download" aria-hidden="true"></i></a>
+                {% if g.user.has_role('admin') %}
+                <a href="{{ url_for('to_archive', directory=path_one, filename=file.file_name, filetype=file.file_type) }}"><i class="fa fa-archive" aria-hidden="true"></i></a>
+                <a href="{{ url_for('delete_files', directory=path_one, filename=file.file_name, filetype=file.file_type) }}"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+                {% endif %}
+            </td>
+            <td class="hidden-lg-down">{{ file.uploaded_by.username }}</td>
+            {% if file.file_name|length > 15 %}
+            <td><a tabindex="0" class="pop-toggle" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="{{ file.file_name }}">
+               {{ file.file_name[:16] + '...' +  file.file_name[file.file_name|length - 9: -1] + file.file_name[-1]}}</a>
+                <div class="full_name">{{ file.file_name }}</div>
+            </td>
+            {% else %}
+            <td>{{ file.file_name }}<div class="full_name">{{ file.file_name }}</div></td>
+
+            {% endif %}
+            <td>{{ file.file_type }}</td>
+            <td class="hidden-md-down">{{ file.uploaded_at.strftime('%Y-%m-%d %I:%M:%p') }}</td>
+            {% if g.user.has_role('admin') or g.user.has_role('superadmin') %}
+            <td>
+                {% if file.worked_on %}
+                    <button type="button" class="submit btn btn-sm col-xs-12">yes</button>
+                {% else %}
+                    <button type="button" class="submit btn btn-sm col-xs-12">no</button>
+                {% endif %}
+            </td>
+            {% endif %}
+            {% if file.google_docs %}
+                <td>{{ file.google_docs }}</td>
+            {% else%}
+                {% if stage_one_doc.count() %}
+                <td></td>
+                {% endif %}
+            {% endif %}
+        </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+    </div>
+
+    <!-- STAGE TWO FILES -->
+    <div id="stagetwo" class="tabcontent hidden-sm-down">
+    <table class="table table-hover table-bordered">
+    <thead>
+        <tr class="table-head-row" >
+            <th class="hidden-lg-down"># <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+            <th>Options </th>
+            <th class="hidden-lg-down">Uploader <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+            <th>File Name <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+            <th>File type<i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+            <th class="hidden-md-down">Uploaded at <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+            {% if g.user.has_role('admin') or g.user.has_role('superadmin') %}
+            <th>Worked on <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+    {% for file in stage_two %}
+        <tr>
+            <th scope="row" class="hidden-lg-down">{{ file.id }}</th>
+            <td class="download-space">
+                <a href="{{ url_for('downloads', directory=path_two, filename=file.file_name)}}" download="{{ file.file_name }}">
+                <i class="fa fa-download" aria-hidden="true"></i></a>
+                {% if g.user.has_role('admin' or g.user.has_role('superadmin')) %}
+                <a href="{{ url_for('to_archive', directory=path_two, filename=file.file_name, filetype=file.file_type) }}"><i class="fa fa-archive" aria-hidden="true"></i></a>
+                <a href="{{ url_for('delete_files', directory=path_two, filename=file.file_name, filetype=file.file_type) }}"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+                {% endif %}
+            </td>
+            <td class="hidden-lg-down">{{ file.uploaded_by.username }}</td>
+            {% if file.file_name|length > 15 %}
+            <td><a tabindex="0" class="pop-toggle" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="{{ file.file_name }}">
+               {{ file.file_name[:16] + '...' +  file.file_name[file.file_name|length - 9: -1] + file.file_name[-1]}}</a>
+                <div class="full_name">{{ file.file_name }}</div>
+            </td>
+            {% else %}
+            <td>{{ file.file_name }}<div class="full_name">{{ file.file_name }}</div></td>
+
+            {% endif %}
+            <td>{{ file.file_type }}</td>
+            <td class="hidden-md-down">{{ file.uploaded_at.strftime('%Y-%m-%d %I:%M:%p') }}</td>
+            {% if g.user.has_role('admin') or g.user.has_role('superadmin') %}
+            <td>
+                {% if file.worked_on %}
+                    <button type="button" class="submit btn btn-sm col-xs-12">yes</button>
+                {% else %}
+                    <button type="button" class="submit btn btn-sm col-xs-12">no</button>
+                {% endif %}
+            </td>
+            {% endif %}
+        </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+    </div>
+
+    <!-- STAGE THREE FILES -->
+    <div id="stagethree" class="tabcontent hidden-sm-down">
+    <table class="table table-hover table-bordered">
+    <thead>
+        <tr class="table-head-row" >
+            <th class="hidden-lg-down"># <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+            <th>Options </th>
+            <th class="hidden-lg-down">Uploader <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+            <th>File Name <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+            <th>File type<i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+            <th class="hidden-md-down">Uploaded at <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+            {% if g.user.has_role('admin') or g.user.has_role('superadmin') %}
+            <th>Worked on <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+    {% for file in stage_three %}
+        <tr>
+            <th scope="row" class="hidden-lg-down">{{ file.id }}</th>
+            <td class="download-space">
+                <a href="{{ url_for('downloads', directory=path_three, filename=file.file_name)}}" download="{{ file.file_name }}">
+                <i class="fa fa-download" aria-hidden="true"></i></a>
+                {% if g.user.has_role('admin') %}
+                <a href="{{ url_for('to_archive', directory=path_three, filename=file.file_name, filetype=file.file_type) }}"><i class="fa fa-archive" aria-hidden="true"></i></a>
+                <a href="{{ url_for('delete_files', directory=path_three, filename=file.file_name, filetype=file.file_type) }}"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+                {% endif %}
+            </td>
+            <td class="hidden-lg-down">{{ file.uploaded_by.username }}</td>
+            {% if file.file_name|length > 15 %}
+            <td><a tabindex="0" class="pop-toggle" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="{{ file.file_name }}">
+               {{ file.file_name[:16] + '...' +  file.file_name[file.file_name|length - 9: -1] + file.file_name[-1]}}</a>
+                <div class="full_name">{{ file.file_name }}</div>
+            </td>
+            {% else %}
+            <td>{{ file.file_name }}<div class="full_name">{{ file.file_name }}</div></td>
+
+            {% endif %}
+            <td>{{ file.file_type }}</td>
+            <td class="hidden-md-down">{{ file.uploaded_at.strftime('%Y-%m-%d %I:%M:%p') }}</td>
+            {% if g.user.has_role('admin') or g.user.has_role('superadmin') %}
+            <td>
+                {% if file.worked_on %}
+                    <button type="button" class="submit btn btn-sm col-xs-12">yes</button>
+                {% else %}
+                    <button type="button" class="submit btn btn-sm col-xs-12">no</button>
+                {% endif %}
+            </td>
+            {% endif %}
+        </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+    </div>
+
+    <!-- STAGE FOUR FILES -->
+    <div id="stagefour" class="tabcontent hidden-sm-down">
+    <table class="table table-hover table-bordered">
+    <thead>
+        <tr class="table-head-row" >
+            <th class="hidden-lg-down"># <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+            <th>Options </th>
+            <th class="hidden-lg-down">Uploader <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+            <th>File Name <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+            <th>File type<i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+            <th class="hidden-md-down">Uploaded at <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+            {% if g.user.has_role('admin') or g.user.has_role('superadmin') %}
+            <th>Worked on <i class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+    {% for file in stage_four %}
+        <tr>
+            <th scope="row" class="hidden-lg-down">{{ file.id }}</th>
+            <td class="download-space">
+                <a href="{{ url_for('downloads', directory=path_four, filename=file.file_name)}}" download="{{ file.file_name }}">
+                <i class="fa fa-download" aria-hidden="true"></i></a>
+                {% if g.user.has_role('admin') or g.user.has_role('superadmin') %}
+                <a href="{{ url_for('to_archive', directory=path_four, filename=file.file_name, filetype=file.file_type) }}"><i class="fa fa-archive" aria-hidden="true"></i></a>
+                <a href="{{ url_for('delete_files', directory=path_four, filename=file.file_name, filetype=file.file_type) }}"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+                {% endif %}
+            </td>
+            <td class="hidden-lg-down">{{ file.uploaded_by.username }}</td>
+            {% if file.file_name|length > 15 %}
+            <td><a tabindex="0" class="pop-toggle" data-toggle="popover" data-placement="top" data-trigger="focus" data-content="{{ file.file_name }}">
+               {{ file.file_name[:16] + '...' +  file.file_name[file.file_name|length - 9: -1] + file.file_name[-1]}}</a>
+                <div class="full_name">{{ file.file_name }}</div>
+            </td>
+            {% else %}
+            <td>{{ file.file_name }}<div class="full_name">{{ file.file_name }}</div></td>
+
+            {% endif %}
+            <td>{{ file.file_type }}</td>
+            <td class="hidden-md-down">{{ file.uploaded_at.strftime('%Y-%m-%d %I:%M:%p') }}</td>
+            {% if g.user.has_role('admin') %}
+            <td>
+                {% if file.worked_on %}
+                    <button type="button" class="submit btn btn-sm col-xs-12">yes</button>
+                {% else %}
+                    <button type="button" class="submit btn btn-sm col-xs-12">no</button>
+                {% endif %}
+            </td>
+            {% endif %}
+        </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+    </div>
+
+    <div id="accordion" class="hidden-md-up">
+        {% for stage in all_stages %}
+            <h3 class="hidden-md-up">{{ stage[0] }} <span class="tag tag-pill tag-danger">{{ stage[1] | length }}</span></h3>
+            <div>
+                <ul class="list-group hidden-md-up">
+                    {% for file in stage[1] %}
+                        <li class="list-group-item text-white text-xs-center mb-2">
+                            <span class="file-name">Name: <br> {{ file.file_name }}</span>
+                            <div class="uploaded-by pt-2">Uploaded by: <br>{{ file.uploaded_by.username }}</div>
+                            <div class="upload-time py-2">Uploaded at: <br> {{ file.uploaded_at.strftime('%Y-%m-%d %I:%M:%p') }}</div>
+                            <div class="options">
+                                <a class="mr-2" href="{{ url_for('downloads', directory=get_path(stage[0]), filename=file.file_name) }}" download="{{ file.file_name }}">
+                                <i class="fa fa-download" aria-hidden="true"></i>
+                                </a><a href="{{ url_for('to_archive', directory=get_path(stage[0]), filename=file.file_name, filetype=file.file_type) }}">
+                                    <i class="fa fa-archive" aria-hidden="true"></i></a>
+                            </div>
+
+                            {% if g.user.has_role('admin') or g.user.has_role('superadmin') %}
+
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endfor %}
+    </div>
+
+    </div>
+{% else %}
+    <p>Email not confirmed</p>
+{% endif %}
+    <script>
+        function openContent(evt, fileStage) {
+            var i, tabcontent, tablinks;
+
+
+
+            // Get all elements with the class="tabcontent" and hide them
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+
+            // Get all elements with the class="tablinks" and hide them
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i=0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+
+            // Show the current, and add an "active" class to the link that opened the tab
+            document.getElementById(fileStage).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+    </script>
+{#            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>#}
+{#            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.sticky/1.0.3/jquery.sticky.min.js"></script>#}
+{#            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.28.1/js/jquery.tablesorter.js"></script>#}
+
+
+
+{% endblock %}
+{% block scripts %}
+        <script>
+        $('#sticky-nav').sticky({
+            topSpacing: 53.98
+        });
+        $(".table").tablesorter();
+        $('.pop-toggle').popover({
+            trigger: "focus"
+        });
+        $('#accordion').accordion({collapsible: true});
+        </script>
+    <script>
+    var directory = "stageone";
+    $('li').click(function() {
+        directory = $(this).text().replace(/ /g, "").toLowerCase();
+        console.log(directory);
+    });
+
+    $('.submit').click(function() {
+        var fileName = $(this).parent().parent().children(":nth-child(4)").children(":last-child").text().trim(fileName);
+        var fileType = $(this).parent().parent().children(":nth-child(5)").text().replace(/ /g,'');
+        var workedOn = $(this);
+        if (workedOn.text() == "no") {
+            workedOn.text("yes");
+        } else {
+            workedOn.text("no");
+        }
+        var file = {'name': fileName, 'fileType': fileType, "directory": directory};
+        $.ajax({
+            type: "POST",
+            url: "{{ url_for('toggle_file') }}",
+            data: JSON.stringify(file, null, '\t'),
+            contentType: 'application/json;charset=UTF-8',
+            success: function(result) {
+                console.log(result)
+            }
+        });
+    });
+    </script>
+{% endblock %}

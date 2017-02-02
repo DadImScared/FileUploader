@@ -1,0 +1,6 @@
+
+Dear {{ user.username }},
+
+thank you for registering. Click on the following link to confirm your email
+
+{{ url_for('confirm_email', token=token, _external=True) }}
