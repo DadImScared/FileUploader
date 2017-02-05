@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="85cbb9d3-f202-4227-b176-cfd404a201b6" name="Default" comment="">
+    <list default="true" id="85cbb9d3-f202-4227-b176-cfd404a201b6" name="Default" comment="fixed mobile layouts and role_required decorator">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/mobileusers.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="FileSorting.iws" />
@@ -801,7 +802,14 @@
       <option name="project" value="LOCAL" />
       <updated>1486254498964</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="fixed mobile layouts and role_required decorator">
+      <created>1486254567117</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1486254567118</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TestHistory">
