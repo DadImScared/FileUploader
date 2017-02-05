@@ -93,8 +93,7 @@ def restrict_files(file_list):
         return file_list[:3]
     elif g.user.has_role('stagetwo'):
         return file_list[:2]
-    else:
-        return file_list[0]
+    return file_list[:1]
 
 
 
@@ -385,6 +384,16 @@ def downloads(directory, filename, version=None):
         return send_from_directory(directory, filename, attachment_filename=filename, as_attachment=True)
 
 
+@app.route('/getstarted', methods=('GET',))
+def get_started_files():
+    audio = models.GetStarted.select().where((models.GetStarted.file_type == "Audio") &
+                                             (models.GetStarted.worked_on == False))
+    video = models.GetStarted.select().where((models.GetStarted.file_type == "Video") &
+                                             (models.GetStarted.worked_on == False))
+    all_files = [x for x in audio] + [x for x in video]
+    return render_template("get_started.html", audio=audio, video=video, all_files=all_files)
+
+
 @app.route('/files', methods=('GET',))
 @login_required
 @authenticated
@@ -596,7 +605,7 @@ def index():
 @app.route('/admin/', methods=('GET', 'POST'))
 @login_required
 @authenticated
-@role_required("admin")
+@role_required(["admin", "superadmin"])
 def admin_index():
     unconfirmed_users = models.User.select().where(~models.User.admin_confirmed)
     form = forms.AdminUploadForm()
@@ -730,7 +739,7 @@ def users(id=None):
 
 @app.route('/admin/required', methods=('GET', "POST"))
 @login_required
-@role_required("admin")
+@role_required(["admin", "superadmin"])
 def required_admin():
     return render_template("required_admin.html")
 
@@ -738,7 +747,7 @@ def required_admin():
 @app.route("/admin/register", methods=('GET', 'POST'))
 @login_required
 @authenticated
-@role_required("admin")
+@role_required(["admin", "superadmin"])
 def register_users():
     form = forms.AdminRegisterForm()
     if form.validate_on_submit():
@@ -771,7 +780,7 @@ def confirm_user_email(token):
 @app.route('/admin/email', methods=('GET', 'POST'))
 @login_required
 @authenticated
-@role_required("admin")
+@role_required(["admin", "superadmin"])
 def send_email():
     form = forms.EmailForm()
     if form.validate_on_submit():
@@ -788,7 +797,7 @@ def send_email():
 @app.route("/admin/edit/<int:id>", methods=('GET', 'POST'))
 @login_required
 @authenticated
-@role_required("superadmin")
+@role_required(["superadmin"])
 def admin_edit(id):
     form = forms.EditForm()
     user = models.User.get_user(id)
@@ -823,12 +832,14 @@ def admin_edit(id):
 
 
 @app.route('/admin/toggleconfirmed/<email>', methods=('GET', 'POST'))
-@role_required("admin")
+@role_required(["admin", "superadmin"])
 def toggle_confirmed(email):
     try:
         user = models.User.get(models.User.email == email)
     except models.DoesNotExist:
         flash("User doesn't exist!", "warning")
+        return redirect(url_for('users'))
+    if user.has_role('superadmin'):
         return redirect(url_for('users'))
     user.admin_confirmed = not user.admin_confirmed
     flash("User {} is now confirmed".format(user.email) if user.admin_confirmed else
@@ -839,7 +850,7 @@ def toggle_confirmed(email):
 
 
 @app.route('/admin/togglefile', methods=('POST',))
-@role_required("admin")
+@role_required(["admin", "superadmin"])
 def toggle_file():
     info = request.json
     fileName = info['name'].strip()
@@ -853,7 +864,7 @@ def toggle_file():
 
 @app.route('/admin/toggleconfirmed', methods=('POST',))
 @login_required
-@role_required("admin")
+@role_required(["admin", "superadmin"])
 def toggle_admin_confirmed():
     info = request.json
     user = models.User.get_user(username=info['name'])
@@ -876,9 +887,10 @@ def get_started():
     new_record = models.GetStarted.random_records(info['fileType'], 1).get()
     models.GetStartedDownloads.create_entry(user=g.user._get_current_object(),
                                             file=file.id)
-    send_mail('File info', sender_email, [g.user.email], 'textbody here', '<b>test html here</b>')
-    send_mail('User getting started', sender_email, [receiver], 'test body to admin here',
-              '<h1>test html admin here </h1>')
+    send_mail('File info', sender_email, [g.user.email],
+              render_template('admin/getstartedemail.txt', file=file))
+    send_mail('User getting started', sender_email, [receiver], "{} got started on {}".format(g.user.username,
+                                                                                              file.file_link))
     new_record = {
         "id": new_record.id,
         "fileName": new_record.file_name,
@@ -888,7 +900,7 @@ def get_started():
 
 
 @app.route('/admin/confirmandregister', methods=('POST',))
-@role_required("admin")
+@role_required(["admin", "superadmin"])
 def confirm_assign():
     info = request.json
     user = models.User.get_user(username=info['name'])
@@ -899,7 +911,7 @@ def confirm_assign():
 
 
 @app.route('/admin/assignrole', methods=('POST',))
-@role_required("admin")
+@role_required(["admin", "superadmin"])
 def assign_role():
     info = request.json
     user = models.User.get_user(username=info['name'])
@@ -913,7 +925,7 @@ def assign_role():
 
 
 @app.route('/admin/deleterole', methods=('POST',))
-@role_required("admin")
+@role_required(["admin", "superadmin"])
 def delete_role():
     info = request.json
     user = models.User.get_user(username=info['name'])
@@ -951,7 +963,7 @@ def email_exists():
 
 @app.route('/admin/files', methods=('GET', 'POST'))
 @login_required
-@role_required("admin")
+@role_required(["admin", "superadmin"])
 def admin_files():
     stage_one = models.StageOneUpload.select().order_by('-id')
     stage_two = models.StageTwoUpload.select().order_by('-id')
@@ -974,15 +986,16 @@ def admin_files():
 
 @app.route('/admin/downloadlog', methods=('GET',))
 @login_required
-@role_required('admin')
+@role_required(["admin", "superadmin"])
 def download_log():
     all_downloads = models.downloads()
-    return render_template('admin/downloads.html', all_downloads=all_downloads)
+    get_started = models.GetStartedDownloads.select()
+    return render_template('admin/downloads.html', all_downloads=all_downloads, get_started=get_started)
 
 
 @app.route('/admin/archive', methods=('GET',))
 @login_required
-@role_required("admin")
+@role_required(["admin", "superadmin"])
 def archive_files():
     stage_one = models.StageOneArchive.select().order_by('-version')
     stage_two = models.StageTwoArchive.select().order_by('-version')
@@ -1004,7 +1017,7 @@ def archive_files():
 
 @app.route('/admin/delete/<directory>/<filename>/<filetype>/', methods=('GET', 'POST'))
 @app.route('/admin/delete/<directory>/<filename>/<filetype>/<int:version>', methods=('GET', 'POST'))
-@role_required("admin")
+@role_required(["admin", "superadmin"])
 def delete_files(directory, filename, filetype, version=None):
     sub_directory = directory.split('\\')[-2]
     # add main stage delete too
@@ -1023,7 +1036,7 @@ def delete_files(directory, filename, filetype, version=None):
 
 
 @app.route('/toarchive/<directory>/<filename>/<filetype>', methods=('GET', 'POST'))
-@role_required("admin")
+@role_required(["admin", "superadmin"])
 def to_archive(directory, filename, filetype):
 
     # steps for moving a file from main stage to archive of appropriate stage
@@ -1101,7 +1114,7 @@ def to_archive(directory, filename, filetype):
 
 # add flash messages before return redirects!!!!
 @app.route('/fromarchive/<directory>/<filename>/<filetype>/<int:version>', methods=('GET', 'POST'))
-@role_required("admin")
+@role_required(["admin", "superadmin"])
 def from_archive(directory, filename, filetype, version):
     sub_directory = directory.split('\\')[-2]
     new_file = uploaded_archives[sub_directory].get(file_name=filename, file_type=filetype, version=version)

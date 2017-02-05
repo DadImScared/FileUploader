@@ -54,7 +54,9 @@
         {% if g.user.has_role('admin') or g.user.has_role('superadmin') %}
             <a href="{{ url_for('admin_index') }}">Admin Area</a>
         {% endif %}
-        <a class="dropdown-item" href="{{ url_for('users', id=g.user.id) }}">Profile</a>
+        <a class="nav-link" href="{{ url_for('get_started_files') }}">Get Started</a>
+        <a class="nav-link" href="{{ url_for('download_log') }}">Download log</a>
+        <a href="{{ url_for('users', id=g.user.id) }}">Profile</a>
         <a href="{{ url_for('edit_user') }}">Settings</a>
         <a href="{{ url_for('logout') }}">Log out</a>
     {% else %}
@@ -85,6 +87,9 @@
                   </div>
                 </li>
                   {% if g.user.is_authenticated %}
+                      <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('get_started_files') }}">Get Started</a>
+                      </li>
                       <li class="nav-item float-xs-right">
                         <a class="nav-link" href="{{ url_for('logout') }}">Log Out</a>
                       </li>

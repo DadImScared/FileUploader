@@ -35,7 +35,7 @@
                   {{ render_field(form.password, class="form-control") }}
               </div>
           </div>
-            <button type="submit" class="btn btn-sm">Submit</button>
+            <button id="username-button" type="submit" class="btn btn-sm">Submit</button>
         </form>
               </div>
         </div>
@@ -73,6 +73,9 @@
 {% endblock %}
 {% block scripts %}
     <script>
+    $('#username-button').click(function() {
+        window.location.hash = "";
+    });
     if (window.location.hash === "#profile") {
         $('#home-nav, #home').removeClass('active');
         $('#profile-nav, #profile').addClass('active');

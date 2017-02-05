@@ -1,0 +1,195 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="container pt-2">
+        <div class="form-group row">
+            <div class="col-md-10 offset-md-1 col-xs-12">
+                <label for="file-search" class="text-white">Search:</label>
+                <input class="form-control" type="text" id="file-search">
+            </div>
+        </div>
+        <div id="get-started-files" class="row">
+            <table class="table table-sm table-hover hidden-xs-up">
+                <thead>
+                    <tr class="table-head-row">
+                        <th>File Name <i id="edit-icon" class="fa fa-sort" aria-hidden="true"></i></th>
+                        <th>File Link <i id="edit-icon" class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+                        <th>Type <i id="edit-icon" class="fa fa-sort float-xs-right" aria-hidden="true"></i></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for file in all_files %}
+                        <tr class="table-row-data">
+                            <td class="get-started-name mr-3" scope="row">{{ file.file_name[8:56] }} <span class="hidden-name">{{ file.file_name }}</span></td>
+                            <td class="get-started-link">{{ file.file_link[8:56] }} <span class="hidden-link">{{ file.file_link }}</span></td>
+                            <td class="get-started-type">{{ file.file_type }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div id="get-started-card" class="card col-md-10 offset-md-1 col-xs-12">
+                <ul class="list-group py-2">
+                {% for file in all_files %}
+                    {% if file.file_type == "Video" %}
+                        <li id="{{ file.id }}" class="list-group-item file-list video-list-item text-white">
+                            <span class="name">{{ file.file_name }}</span>
+                            <div class="hidden-link">{{ file.file_link }}</div>
+                        </li>
+                    {% else %}
+                        <li id="{{ file.id }}" class="list-group-item file-list audio-list-item text-white">
+                            <span class="name">{{ file.file_name }}</span>
+                            <div class="hidden-link">{{ file.file_link }}</div>
+                            <div class="hidden-type">{{ file.file_type }}</div>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            </div>
+        </div>
+    </div>
+<!-- Modal -->
+<div class="modal fade bd-example-modal-lg" id="videoModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div id="videoModalContent" class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="videoModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="video-modal-body">
+          <div class="embed-responsive embed-responsive-21by9">
+            <iframe
+                src="https://www.youtube.com/watch?v=O0uSMj0nArM&feature=youtu.be">
+            </iframe>
+          </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" id="videoButton" class="btn btn-primary col-xs-6 offset-xs-3">Get Started!</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="audioModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div id="audioModalContent" class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="audioModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="audio-modal-body text-xs-center">
+
+            <audio id="player" controls>
+                <source src="http://sbnmcd.org/All_mp3/1992-09-01%20Srila%20Gurudeva%20darshan%20in%20English%20about%20Venu%20Gita.MP3" type="audio/mpeg">
+                <source src="" id="wav-player" type="audio/wav">
+            </audio>
+
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" id="audioButton" class="btn btn-primary col-xs-6 offset-xs-3">Get Started!</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+    var fileName;
+    var fileId;
+    var regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    var match;
+    var link = "https://www.youtube.com/embed/";
+    var videoCode;
+    var fullVideo;
+    var audioLink;
+    var audio = $('#player');
+    var fileType;
+    var $list = $('.audio-list-item, .video-list-item');
+    var $audioModal = $('#audioModal');
+    var $videoModal = $('#videoModal');
+    var fileList = $('.file-list');
+    var fileSearch = $('#file-search');
+    console.log(audio[0]);
+
+    function getVideoId(video) {
+        match = video.match(regExp);
+        if (match && match[2].length == 11) { return match[2];
+        } else {
+            return "error"
+        }
+    }
+
+    $list.click(function() {
+        var $this = $(this);
+        fileId = $this.attr('id');
+        if ($this.hasClass('video-list-item')) {
+            var videoLink = $this.children('.hidden-link').text();
+            videoCode = getVideoId(videoLink);
+            fileName = $this.children('.name').text();
+            fileType = "Video";
+            $('#videoModal').modal('toggle');
+        } else {
+            fileName = $this.children('.name').text();
+            audioLink = $this.children('.hidden-link').text();
+            audio[0].pause();
+            audio[0].load();
+            audio[0].oncanplaythrough = audio[0].play();
+            audio.children(":first-child").attr('src', audioLink);
+            fileType = "Audio";
+            $audioModal.modal('toggle');
+            $('#audioModalLabel').text(fileName);
+        }
+    });
+
+    $audioModal.on('show.bs.modal', function() {
+        audio[0].pause();
+    });
+
+    $audioModal.on('hide.bs.modal', function() {
+        audio[0].pause();
+    });
+
+    $videoModal.on('show.bs.modal', function() {
+        fullVideo = link + videoCode;
+        $('iframe').attr("src", fullVideo);
+        $('#videoModalLabel').text(fileName);
+    });
+
+    $('#videoButton, #audioButton').click(function() {
+        var info = {'fileName': fileName, 'fileType': fileType};
+        $.ajax({
+            type: "POST",
+            url: "{{ url_for('get_started') }}",
+            data: JSON.stringify(info, null, '\t'),
+            contentType: 'application/json;charset=UTF-8',
+            success: function(result) {
+                console.log(result);
+                $('#'+fileId).remove();
+                $('.modal').modal('hide');
+            }
+        });
+    });
+
+    fileSearch.keyup(function() {
+        var $this = $(this);
+        var searchVal = $this.val().toLowerCase();
+        fileList.each(function(index) {
+            searchName = $(this).children('.name').text().toLowerCase();
+            if (searchName.indexOf(searchVal) === -1) {
+                $(this).css("display", "none");
+            } else {
+                $(this).css("display", "");
+            }
+        });
+    });
+
+    </script>
+{% endblock %}

@@ -62,6 +62,15 @@
 
             </div>
         {% endfor %}
+        <h3>Get Started Downloads <span class="tag tag-pill tag-danger">{{ get_started | length }}</span></h3>
+        <div>
+            <ul class="list-group">
+            {% for file in get_started %}
+                <li class="list-group-item text-white">{{ file.file.file_name }}</li>
+            {% endfor %}
+            </ul>
+        </div>
+
     </div>
     </div>
 {% endblock %}

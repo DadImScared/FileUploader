@@ -266,13 +266,12 @@
                             <div class="options">
                                 <a class="mr-2" href="{{ url_for('downloads', directory=get_path(stage[0]), filename=file.file_name) }}" download="{{ file.file_name }}">
                                 <i class="fa fa-download" aria-hidden="true"></i>
-                                </a><a href="{{ url_for('to_archive', directory=get_path(stage[0]), filename=file.file_name, filetype=file.file_type) }}">
+                                </a>
+                                {% if g.user.has_role('admin') or g.user.has_role('superadmin') %}
+                                <a href="{{ url_for('to_archive', directory=get_path(stage[0]), filename=file.file_name, filetype=file.file_type) }}">
                                     <i class="fa fa-archive" aria-hidden="true"></i></a>
+                                {% endif %}
                             </div>
-
-                            {% if g.user.has_role('admin') or g.user.has_role('superadmin') %}
-
-                            {% endif %}
                         </li>
                     {% endfor %}
                 </ul>

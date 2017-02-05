@@ -1,6 +1,7 @@
 {% extends "admin/adminlayout.html" %}
 
 {% block content %}
+    {% if g.user.has_role('admin') or g.user.has_role('superadmin') %}
     <div class="container">
         <div id="users">
             <table class="table hidden-md-down table-hover table-bordered">
@@ -51,6 +52,37 @@
                     {% endfor %}
                 </tbody>
             </table>
+            <div class="form-group row hidden-md-up">
+                <div class="col-xs-12">
+                    <label for="user-search" class="text-white">Search:</label>
+                    <input class="form-control" type="text" id="user-search">
+                </div>
+            </div>
+            <div class="card hidden-md-up">
+                <ul class="list-group hidden-md-up">
+                {% for user in users %}
+                    <li class="list-group-item text-white mobile-user-list text-xs-center">
+                        <div>Name:</div>
+                        <div class="user-name pb-2">{{ user.username }}</div>
+                        <div>Email:</div>
+                        <div class="user-email pb-2">{{ user.email }}</div>
+                        <div>Joined at</div>
+                        <div class="user-joined pb-2">{{ user.joined_at.strftime('%Y-%m-%d %I:%M:%p') }}</div>
+                        <div class="user-email-confirmed pb-2">Email confirmed: <br>{{ user.email_confirmed }}</div>
+                        <div class="row">
+                            <div class="col-xs-6">Assign role:</div>
+                            <div class="col-xs-6">Admin confirmed: </div>
+                        {% if user.get_role() %}
+                            <button data-toggle="modal" data-target="#myModal" class="mobile-assign-role mobile-role-button btn btn-sm col-xs-6">{{ user.get_role().name }}</button>
+                        {% else %}
+                            <button data-toggle="modal" data-target="#myModal" class="mobile-role-button btn btn-sm btn-danger col-xs-6">Assign role</button>
+                        {% endif %}
+                        <a href="{{ url_for('toggle_confirmed', email=user.email) }}" class="btn btn-primary btn-sm col-xs-6 admin-confirm-btn" role="button">{{ user.admin_confirmed }}</a>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+            </div>
         </div>
     </div>
     <!-- Modal -->
@@ -83,9 +115,11 @@
     </div>
   </div>
 </div>
+    {% endif %}
 {% endblock %}
 
 {% block scripts %}
+    <script src="/static/mobileusers.js"></script>
     <script>$(".table").tablesorter();</script>
     <script>
 
@@ -125,6 +159,8 @@
     var personEmail;
     var assignedRole = "stageone";
     var $roleButton;
+    var $mobileRoleButton;
+    var onMobile = false;
 
     $('.assign-role, .role-buttons').click(function() {
         var $this = $(this);
@@ -133,6 +169,15 @@
         personEmail = $this.parent().parent().children(":nth-child(4)").text();
         $('.modal-title').text(personEmail);
 {#        console.log($('#' + personId).children(":last-child").children().text("Stage One"));#}
+    });
+
+    $('.mobile-user-list').click(function() {
+        onMobile = true;
+        var $this = $(this);
+        personId = $this.children(".user-name").text();
+        $mobileRoleButton = $this.children(".row").children(".mobile-role-button");
+        $('.modal-title').text(personId);
+
     });
 
     $('#submit-role').click(function() {
@@ -144,8 +189,14 @@
             contentType: 'application/json;charset=UTF-8',
             success: function(result) {
                 console.log(result);
-                $roleButton.children(":first-child").removeClass("btn-danger").addClass("assign-role");
-                $roleButton.children(":first-child").text(assignedRole);
+                if (!onMobile) {
+                    $roleButton.children(":first-child").removeClass("btn-danger").addClass("assign-role");
+                    $roleButton.children(":first-child").text(assignedRole);
+                } else {
+                    $mobileRoleButton.text(assignedRole);
+                    $mobileRoleButton.removeClass('btn-danger').addClass('mobile-assign-role');
+                }
+
             }
         });
     });
@@ -158,10 +209,14 @@
             data: JSON.stringify(personInfo, null, '\t'),
             contentType: 'application/json;charset=UTF-8',
             success: function(result) {
-                console.log(result);
+                if (!onMobile) {
                 $('.modal').modal('toggle');
                 $roleButton.children(":first-child").addClass("btn-danger").removeClass("assign-role");
                 $roleButton.children(":first-child").text("Assign role");
+                    } else{
+                    $mobileRoleButton.addClass('btn-danger').removeClass('mobile-assign-role');
+                    $mobileRoleButton.text("Assign role");
+                }
             }
         });
     });

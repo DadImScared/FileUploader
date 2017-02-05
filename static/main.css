@@ -277,7 +277,9 @@ thead {
 
 #submit,
 .assign-role,
-.submit {
+.submit,
+.mobile-assign-role,
+.admin-confirm-btn{
     color: #00798C;
     /*background-color: #00798C;*/
     background-color: transparent;
@@ -289,7 +291,9 @@ thead {
 .assign-role:hover,
 .submit:hover,
 .register-button:hover,
-.btn[disabled]:hover {
+.btn[disabled]:hover,
+.mobile-assign-role:hover,
+.admin-confirm-btn:hover {
     color: white;
     background-color: #00798C;
 }
@@ -300,7 +304,9 @@ thead {
 
 }
 
-.submit:focus,.assign-role:focus {
+.submit:focus,.assign-role:focus,
+.mobile-assign-role:focus,
+.admin-confirm-btn:hover {
     border-color: #00798C;
     outline: none;
 }
@@ -350,9 +356,29 @@ thead {
 .audio-file-link,
 .download-link, .google-doc,
 .time, .worked-on,
-.time-download{
+.time-download,
+.hidden-name,
+.hidden-link,
+.hidden-type {
     display: none;
 }
+
+.get-started-name,
+.get-started-link {
+    width: 40%;
+    padding: 0;
+    margin: 0;
+}
+
+.get-started-type {
+    width: 20%;
+}
+
+#get-started-card {
+    background-color: #4ECDC4;
+}
+
+
 
 .video-list-item,
 .audio-list-item {
@@ -361,6 +387,15 @@ thead {
     text-align: center;
     vertical-align: middle;
     min-height: 80px;
+}
+
+th {
+    padding: 0;
+    margin: 0;
+}
+
+.modal-title {
+    word-wrap: break-word;
 }
 
 /*********** 588B8B     REGISTER PAGE     6A8D73   545F66   **********/
@@ -473,4 +508,14 @@ thead {
     .center-text {
         text-align: center;
     }
+}
+
+@media screen and (min-width: 769px) {
+    #audioModalContent {
+    margin-top: 15em;
+}
+
+#videoModalContent {
+    margin-top: 7em;
+}
 }

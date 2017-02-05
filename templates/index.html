@@ -95,7 +95,7 @@
 <!-- Modal -->
 <div class="modal fade bd-example-modal-lg" id="videoModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
+    <div id="videoModalContent" class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="videoModalLabel">Modal title</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -120,7 +120,7 @@
 
 <div class="modal fade bd-example-modal-lg" id="audioModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
+    <div id="audioModalContent" class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="audioModalLabel">Modal title</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -222,6 +222,7 @@
             success: function(result) {
                 $('#'+fileId).remove();
                 makeList(result['id'], fileType, result['fileName'], result['fileLink']);
+                $('.modal').modal('hide');
 
             }
         });

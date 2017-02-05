@@ -24,6 +24,7 @@ def authenticated(f):
             return redirect(url_for('index'))
         if not g.user.admin_confirmed:
             flash("Admin has not confirmed you. Please click here to contact an admin", "danger")
+            return redirect(url_for('index'))
         return f(*args, **kwargs)
     return wrapper
 
@@ -33,10 +34,12 @@ def role_required(roles):
         @wraps(f)
         def wrapper(*args, **kwargs):
             required = []
-            user_role = g.user.has_any_role()
+            user_role = g.user.get_role().name
             for role in roles:
                 required.append(role)
-            if not user_role in required:
+            if not user_role:
+                return redirect(url_for('index'))
+            if user_role not in required:
                 return redirect(url_for('index'))
             # if g.user.has_role('superadmin'):
             #     return f(*args, **kwargs)
