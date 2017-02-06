@@ -571,7 +571,7 @@ def index():
                     created_file.google_doc = form.google_doc.data
                     created_file.save()
                 # actually upload file
-                send_mail("User uploaded", sender_email, ["mail here"], "user uploaded file to archive")
+                send_mail("User uploaded", sender_email, [receiver], "user uploaded file to archive")
                 form.upload.data.save("{}/{}/[{}]{}".format(archive_path, path, files.count() + 1, filename))
                 return redirect(url_for('index'))
 
@@ -591,7 +591,7 @@ def index():
                 created_file.google_docs = form.google_doc.data
                 created_file.save()
             # actually upload file
-            send_mail("User uploaded", sender_email, ["mail here"],
+            send_mail("User uploaded", sender_email, [receiver],
                       render_template('admin/email.txt', user=g.user._get_current_object(),
                                       message='uploaded {} to {}'.format(created_file.file_name,path)))
             form.upload.data.save("{}/{}/{}".format(UPLOAD_FOLDER, path, filename))
@@ -788,7 +788,7 @@ def send_email():
         # msg.body = 'text body'
         # msg.html = '<h1>Test HTML</h1> body'
         # mail.send(msg)
-        send_mail("test subject", "mail here", ["mail here"], "test body",
+        send_mail("test subject", sender_email, [receiver], "test body",
                   "<h1>{}</h1>body".format(form.email_message.data))
         return redirect(location="admin/email")
     return render_template("sendemail.html", form=form)
