@@ -25,6 +25,16 @@
                                 </div>
                         </li>
                     {% endfor %}
+                    {% for person in unassigned_users %}
+                        <li id="{{ person.username }}" class="list-group-item">
+                            <div class="row ">
+                                <div class="col-md-6 col-xs-12 center-text">
+                                    <p id="person-email">{{ person.email }} <span class="hidden-name">{{ person.username }}</span></p>
+                                </div>
+                                <button type="button" data-toggle="modal" data-target="#exampleModalLong" class="assign-role-btn btn btn-sm btn-primary col-md-6 col-xs-12">Assign role</button>
+                            </div>
+                        </li>
+                    {% endfor %}
                 </ul>
                 </div>
                 <div id="admin-form" class="col-md-6">
@@ -150,6 +160,13 @@
             $('.modal-title').text(personEmail);
         }
     });
+
+    $('.assign-role-btn').click(function() {
+        var $this = $(this);
+        personId = $this.prev().children('#person-email').children('.hidden-name').text();
+        $('.modal-title').text(personId);
+    });
+
     $('#submit-button').click(function() {
         var info = {"name": personId, "role": assignedRole};
         $.ajax({

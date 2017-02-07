@@ -44,6 +44,7 @@
     <a href="{{ url_for('admin_files') }}">Files</a>
     <a href="{{ url_for('archive_files') }}">Archive</a>
     <a class="nav-link" href="{{ url_for('get_started_files') }}">Get Started</a>
+    <a class="nav-link" href="{{ url_for('download_log') }}">Download log</a>
     <a href="{{ url_for('register_users') }}">Register user</a>
     <a href="{{ url_for('index') }}">Main page</a>
     <a href="{{ url_for('users', id=g.user.id) }}">Profile</a>
@@ -64,6 +65,9 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="{{ url_for('get_started_files') }}">Get Started</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('download_log') }}">Download log</a>
             </li>
             <li class="nav-item">
               <a id="admin-register-user" class="nav-link" href="{{ url_for('register_users') }}">Register user</a>

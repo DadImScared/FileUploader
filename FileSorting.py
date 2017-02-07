@@ -608,6 +608,7 @@ def index():
 @role_required(["admin", "superadmin"])
 def admin_index():
     unconfirmed_users = models.User.select().where(~models.User.admin_confirmed)
+    users_no_roles = [x for x in models.get_users() if not x.has_any_role()]
     form = forms.AdminUploadForm()
     form.directory_choices.choices = [(key, value) for key, value in uploads.items()]
     if form.validate_on_submit():
@@ -694,8 +695,8 @@ def admin_index():
                     form.upload.data.save("{}/{}/[{}]{}".format(archive_path, path, files.count() + 1, filename))
                     return redirect(url_for('admin_index'))
 
-
-    return render_template('admin/home.html', unconfirmed_users=unconfirmed_users, form=form)
+    return render_template('admin/home.html', unconfirmed_users=unconfirmed_users, form=form,
+                           unassigned_users=users_no_roles)
 
 
 @app.route('/admin/users', methods=('GET', 'POST'))
@@ -904,7 +905,7 @@ def get_started():
 def confirm_assign():
     info = request.json
     user = models.User.get_user(username=info['name'])
-    user.admin_confirmed = not user.admin_confirmed
+    user.admin_confirmed = True
     user.save()
     user.create_role([info['role']])
     return jsonify("success"), 200
