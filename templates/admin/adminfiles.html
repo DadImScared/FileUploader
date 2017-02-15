@@ -45,7 +45,7 @@
             <td class="download-space">
                 <a href="{{ url_for('downloads', directory=path_one, filename=file.file_name)}}" download="{{ file.file_name }}">
                 <i class="fa fa-download" aria-hidden="true"></i></a>
-                <a href="{{ url_for('to_archive', directory=path_one, filename=file.file_name, filetype=file.file_type) }}"><i class="fa fa-archive" aria-hidden="true"></i></a>
+                <a href="{{ url_for('to_archive', directory='/home/madhavi/FileUploader/FileUploader/static/uploads/stageone/', filename=file.file_name, filetype=file.file_type) }}"><i class="fa fa-archive" aria-hidden="true"></i></a>
                 <a href="{{ url_for('delete_files', directory=path_one, filename=file.file_name, filetype=file.file_type) }}"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
 
             </td>

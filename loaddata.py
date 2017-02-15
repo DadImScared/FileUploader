@@ -20,13 +20,27 @@ directories = [
 ]
 models.initialize()
 
-for role in roles:
-    models.Role.create(name=role[0], description=role[1])
+stages = [models.StageOneUpload, models.StageTwoUpload,
+        models.StageThreeUpload, models.StageFourUpload,
+        models.StageOneDownload, models.StageTwoDownload,
+        models.StageThreeDownload, models.StageFourDownload,
+        models.StageOneArchive, models.StageTwoArchive,
+        models.StageThreeArchive, models.StageFourArchive,
+        models.StageOneArchiveDownload, models.StageTwoArchiveDownload,
+        models.StageThreeArchiveDownload, models.StageFourArchiveDownload]
 
-models.User.create_user(name, email, password, ['superadmin'], True, True)
+for stage in stages:
+    stage.drop_table()
 
-add_files(file="mp3list.html")
-add_files(url='http://purebhakti.tv/movies.htm')
+models.initialize()
+
+# for role in roles:
+#     models.Role.create(name=role[0], description=role[1])
+
+# models.User.create_user(name, email, password, ['superadmin'], True, True)
+
+# add_files(file="mp3list.html")
+# add_files(url='http://purebhakti.tv/movies.htm')
 
 os.mkdir("{0}{1}static{1}uploads".format(dir_path, os.path.sep))
 os.mkdir("{0}{1}static{1}uploads{1}archive".format(dir_path, os.path.sep))

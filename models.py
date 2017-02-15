@@ -68,7 +68,7 @@ class User(UserMixin, Model):
 
     def get_role(self):
         try:
-            role = UserRole.select().where(UserRole.user == self.id).order_by(-UserRole.role_id).get().role
+            role = UserRole.get(UserRole.user == self)
         except DoesNotExist:
             return None
         else:
@@ -76,9 +76,7 @@ class User(UserMixin, Model):
 
     def has_role(self, role):
         try:
-            new_role = Role.get(Role.name == role)
-
-            return UserRole.get((UserRole.user_id == self.id) & (UserRole.role_id == new_role)).role.name == role
+            return UserRole.get((UserRole.user == self.id) & (UserRole.role == role_by_id(role)))
         except DoesNotExist:
             return False
 
@@ -91,18 +89,19 @@ class User(UserMixin, Model):
         )
 
     def has_uploaded(self, stage, filename, filetype):
+        print("{} {} {} {}".format(self.username, stage,filename,filetype))
         try:
             file = upload_tables[stage].get(
                 (upload_tables[stage].file_name==filename) &
                 (upload_tables[stage].file_type==filetype) &
-                (upload_tables[stage].uploaded_by_id==self.id)
+                (upload_tables[stage].uploaded_by==self.id)
             )
         except DoesNotExist:
             try:
                 file = uploaded_archives[stage].get(
                     (uploaded_archives[stage].file_name == filename) &
                     (uploaded_archives[stage].file_type == filetype) &
-                    (uploaded_archives[stage].uploaded_by_id == self.id)
+                    (uploaded_archives[stage].uploaded_by == self.id)
                 )
             except DoesNotExist:
                 return False
@@ -570,8 +569,7 @@ class User(UserMixin, Model):
                 return
 
         try:
-            user_role = UserRole.get((UserRole.user == self) &
-                                     (UserRole.role == self.get_role()))
+            user_role = UserRole.get(UserRole.user == self)
         except DoesNotExist:
             return None
         else:

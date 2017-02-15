@@ -34,7 +34,7 @@ def role_required(roles):
         @wraps(f)
         def wrapper(*args, **kwargs):
             required = []
-            user_role = g.user.get_role().name
+            user_role = g.user.get_role().role.name
             for role in roles:
                 required.append(role)
             if not user_role:

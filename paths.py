@@ -5,7 +5,7 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 
 UPLOAD_FOLDER = "{0}{1}static{1}uploads{1}".format(dir_path, os.path.sep)
 
-archive = 'archive\\'
+archive = 'archive{}'.format(os.path.sep)
 archive_path = UPLOAD_FOLDER + archive
 
 def get_path(string):
