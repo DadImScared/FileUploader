@@ -340,11 +340,12 @@ def logout():
 @app.route('/uploads/<path:directory>/<filename>/<int:version>')
 def downloads(directory, filename, version=None):
     # gets sub directory from full directory path
-    # example 'C:\\Users\\murli\\PycharmProjects\\FileSorting\\static\\uploads\\stageoneuploads\\'
-    # ['C:', 'Users', 'murli', 'PycharmProjects', 'FileSorting', 'static', 'uploads', 'stageoneuploads', '']
+    # example 'C:\\PycharmProjects\\FileSorting\\static\\uploads\\stageoneuploads\\'
+    # ['C:', 'PycharmProjects', 'FileSorting', 'static', 'uploads', 'stageoneuploads', '']
     # second to last = sub_directory
     print(directory)
-    sub_directory = directory.rsplit('{}'.format(sep), 1)[-1]
+    sub_directory = directory.split('{}'.format(sep))[-1 if "/" in directory else -2]
+    print(directory.rsplit('{}'.format(sep), 1))
     print(sub_directory)
     print(filename)
     print(UPLOAD_FOLDER)
@@ -368,7 +369,8 @@ def downloads(directory, filename, version=None):
             other_file.worked_on = True
             other_file.save()
         download_archives[sub_directory].create_entry(g.user._get_current_object(), file)
-        return send_from_directory("{}{}".format(archive_path,upload_path[sub_directory]), "[{}]{}".format(version, filename))
+        return send_from_directory("{}{}".format(archive_path,upload_path[sub_directory]), "[{}]{}".format(version,
+                                                                                                           filename))
     else:
         file = upload_tables[sub_directory].get(upload_tables[sub_directory].file_name == filename)
         file.worked_on = True
@@ -385,7 +387,8 @@ def downloads(directory, filename, version=None):
             other_file.worked_on = True
             other_file.save()
         download_tables[sub_directory].create_entry(g.user._get_current_object(), file)
-        return send_from_directory("{}{}".format(UPLOAD_FOLDER,upload_path[sub_directory]), filename, attachment_filename=filename, as_attachment=True)
+        return send_from_directory("{}{}".format(UPLOAD_FOLDER,upload_path[sub_directory]), filename,
+                                   attachment_filename=filename, as_attachment=True)
 
 
 @app.route('/getstarted', methods=('GET',))
@@ -577,7 +580,7 @@ def index():
                     created_file.save()
                 # actually upload file
                 send_mail("User uploaded", sender_email, [receiver], "user uploaded file to archive")
-                form.upload.data.save("{}{}[{}]{}".format(archive_path, upload_path[path], files.count() + 1, filename))
+                form.upload.data.save("{}{}[{}]{}".format(archive_path, upload_path[path], files.count(), filename))
                 return redirect(url_for('index'))
 
             opposite_file = [path, filename, file_type]
@@ -658,7 +661,7 @@ def admin_index():
                             created_file.google_doc = form.google_doc.data
                             created_file.save()
                         # actually upload file
-                        form.upload.data.save("{}{}[{}]{}".format(archive_path, upload_path[path], files.count()+1, filename))
+                        form.upload.data.save("{}{}[{}]{}".format(archive_path, upload_path[path], files.count(), filename))
                         return redirect(url_for('admin_index'))
                 else:
                     opposite_file = [path, filename, file_type]
@@ -687,17 +690,19 @@ def admin_index():
                     print("you've uploaded a file already!")
                 else:
                     files = models.file_in_archive(path, filename, file_type)
+                    version = files.count() + 1
                     created_file = uploaded_archives[path].create_archive_entry(
                         uploaded_by=g.user._get_current_object(),
                         file_name=filename,
-                        version=files.count() + 1,
+                        version=version,
                         file_type=file_type
                     )
                     if form.google_doc.data:
                         created_file.google_docs = form.google_doc.data
                         created_file.save()
                     # actually upload file
-                    form.upload.data.save("{}{}[{}]{}".format(archive_path, upload_path[path], files.count() + 1, filename))
+                    form.upload.data.save("{}{}[{}]{}".format(archive_path,
+                                                              upload_path[path], version, filename))
                     return redirect(url_for('admin_index'))
 
     return render_template('admin/home.html', unconfirmed_users=unconfirmed_users, form=form,
@@ -1021,17 +1026,19 @@ def archive_files():
                            path_one=stage_one_path, path_two=stage_two_path,
                            path_three=stage_three_path, path_four=stage_four_path, all_stages=all_files)
 
+
 @app.route('/admin/delete/<path:directory>/<filename>/<filetype>/', methods=('GET', 'POST'))
 @app.route('/admin/delete/<path:directory>/<filename>/<filetype>/<int:version>', methods=('GET', 'POST'))
 @role_required(["admin", "superadmin"])
 def delete_files(directory, filename, filetype, version=None):
-    sub_directory = directory.rsplit('{}'.format(sep), 1)[-1]
+    sub_directory = directory.split('{}'.format(sep))[-1 if "/" in directory else -2]
     # add main stage delete too
     print("delete print")
     print(directory.split(sep))
     print(sep)
     print(directory)
-    if directory.split('{}'.format(sep))[-2] == "archive":
+    print(directory.split('{}'.format(sep))[-2])
+    if "archive" in directory.split('{}'.format(sep)):
         file = uploaded_archives[sub_directory].get(uploaded_archives[sub_directory].file_name == filename,
                                                     uploaded_archives[sub_directory].file_type == filetype,
                                                     uploaded_archives[sub_directory].version == version)
@@ -1039,12 +1046,14 @@ def delete_files(directory, filename, filetype, version=None):
         download_entries = download_archives[sub_directory].select().where(
             download_archives[sub_directory].file == uploaded_archives[sub_directory].get_archive_file(filename, version))
         for item in download_entries:
-            item.delete_instance()
+            try:
+                item.delete_instance()
+            except models.DoesNotExist:
+                pass
         file.delete_instance()
     else:
         file = upload_tables[sub_directory].get(upload_tables[sub_directory].file_name == filename,
                                                 upload_tables[sub_directory].file_type == filetype)
-        print(download_tables[sub_directory].get(download_tables[sub_directory].file == 1).file.file_name)
         download_entries = download_tables[sub_directory].select().where(download_tables[sub_directory].file == upload_tables[sub_directory].get_file(filename))
         for item in download_entries:
             try:
@@ -1066,7 +1075,8 @@ def to_archive(directory, filename, filetype):
     # example 'C:\\Users\\murli\\PycharmProjects\\FileSorting\\static\\uploads\\stageone\\'
     # ['C:', 'Users', 'murli', 'PycharmProjects', 'FileSorting', 'static', 'uploads', 'stageone', '']
     # second to last = sub_directory
-    sub_directory = directory.rsplit('{}'.format(sep), 1)[-1]
+    #                                                has to be like this because extra space at the end like above
+    sub_directory = directory.split('{}'.format(sep))[-1 if "/" in directory else -2]
     # get file in main stage
     print(directory)
     print(sub_directory)
@@ -1137,14 +1147,13 @@ def to_archive(directory, filename, filetype):
                 item.delete_instance()
             stage_file.delete_instance()
             return redirect(url_for('admin_files'))
-    return redirect(url_for('admin_files'))
 
 
 # add flash messages before return redirects!!!!
 @app.route('/fromarchive/<path:directory>/<filename>/<filetype>/<int:version>', methods=('GET', 'POST'))
 @role_required(["admin", "superadmin"])
 def from_archive(directory, filename, filetype, version):
-    sub_directory = directory.rsplit('{}'.format(sep), 1)[-1]
+    sub_directory = directory.split('{}'.format(sep))[-1 if "/" in directory else -2]
     new_file = uploaded_archives[sub_directory].get((uploaded_archives[sub_directory].file_name==filename)
     & (uploaded_archives[sub_directory].file_type==filetype) &
     (uploaded_archives[sub_directory].version==version))
@@ -1207,7 +1216,7 @@ def from_archive(directory, filename, filetype, version):
             ))
             return redirect(url_for('archive_files'))
 
-# if __name__ == '__main__':
-#     app.run(debug=True)
+if __name__ == '__main__':
+    app.run(debug=True)
 
 
