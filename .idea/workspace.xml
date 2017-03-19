@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="85cbb9d3-f202-4227-b176-cfd404a201b6" name="Default" comment="added filetools.py">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/filetools.py" />
+    <list default="true" id="85cbb9d3-f202-4227-b176-cfd404a201b6" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pathtest.py" afterPath="$PROJECT_DIR$/pathtest.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/testflask.py" afterPath="$PROJECT_DIR$/testflask.py" />
     </list>
     <ignored path="FileSorting.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -22,9 +21,9 @@
     <SUITE FILE_PATH="coverage/FileSorting$Unittests_in_filetools.coverage" NAME="Unittests in filetools Coverage Results" MODIFIED="1488750899108" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/FileSorting$Unittests_in_testflask.coverage" NAME="Unittests in testflask Coverage Results" MODIFIED="1489890098111" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/FileSorting$filecompare.coverage" NAME="filecompare Coverage Results" MODIFIED="1484880309315" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/FileSorting$Unittests_in_BaseTestCase.coverage" NAME="Unittests in BaseTestCase Coverage Results" MODIFIED="1489455972231" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/FileSorting$Unittests_in_BaseTestCase.coverage" NAME="Unittests in BaseTestCase Coverage Results" MODIFIED="1489899399521" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/FileSorting$Unittests_in_playmodels.coverage" NAME="Unittests in playmodels Coverage Results" MODIFIED="1487566348262" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/FileSorting$Unittest_BaseTestCase_test_from_archive.coverage" NAME="Unittest BaseTestCase.test_from_archive Coverage Results" MODIFIED="1489884149667" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/FileSorting$Unittest_BaseTestCase_test_from_archive.coverage" NAME="Unittest BaseTestCase.test_from_archive Coverage Results" MODIFIED="1489955437395" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/FileSorting$Unittests_in_tests__1_.coverage" NAME="Unittests in tests (1) Coverage Results" MODIFIED="1488382212017" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/FileSorting$Unittest_BaseTestCase_test_move_file.coverage" NAME="Unittest BaseTestCase.test_move_file Coverage Results" MODIFIED="1489092090180" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/FileSorting$Unittest_BaseTestCase_test_user_upload.coverage" NAME="Unittest BaseTestCase.test_user_upload Coverage Results" MODIFIED="1489456594072" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
@@ -34,7 +33,7 @@
     <SUITE FILE_PATH="coverage/FileSorting$paths.coverage" NAME="paths Coverage Results" MODIFIED="1485578484165" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/FileSorting$Unittest_BaseTestCase_test_reset_password_with_token.coverage" NAME="Unittest BaseTestCase.test_reset_password_with_token Coverage Results" MODIFIED="1488419907556" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/FileSorting$Unittest_BaseTestCase_test_users_can_confirm_email.coverage" NAME="Unittest BaseTestCase.test_users_can_confirm_email Coverage Results" MODIFIED="1488404106650" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/FileSorting$Unittest_BaseTestCase_test_breaking_to_archive.coverage" NAME="Unittest BaseTestCase.test_breaking_to_archive Coverage Results" MODIFIED="1489542760477" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/FileSorting$Unittest_BaseTestCase_test_breaking_to_archive.coverage" NAME="Unittest BaseTestCase.test_breaking_to_archive Coverage Results" MODIFIED="1489955257879" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/FileSorting$Unittest_BaseTestCase_test_send_confirm_email.coverage" NAME="Unittest BaseTestCase.test_send_confirm_email Coverage Results" MODIFIED="1488404519585" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/FileSorting$soup.coverage" NAME="soup Coverage Results" MODIFIED="1484879782923" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/FileSorting$Unittest_BaseTestCase_test_users_can_reset_password.coverage" NAME="Unittest BaseTestCase.test_users_can_reset_password Coverage Results" MODIFIED="1488419958889" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
@@ -47,10 +46,10 @@
     <SUITE FILE_PATH="coverage/FileSorting$Unittests_in_BaseTestCase__1_.coverage" NAME="Unittests in BaseTestCase (1) Coverage Results" MODIFIED="1489456697664" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/FileSorting$Unittests_in_setup.coverage" NAME="Unittests in setup Coverage Results" MODIFIED="1484880982084" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/FileSorting$Unittests_in_tests.coverage" NAME="Unittests in tests Coverage Results" MODIFIED="1489890172299" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/FileSorting$Unittest_BaseTestCase_test_breaking_from_archive.coverage" NAME="Unittest BaseTestCase.test_breaking_from_archive Coverage Results" MODIFIED="1489885754755" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/FileSorting$Unittest_BaseTestCase_test_to_archive.coverage" NAME="Unittest BaseTestCase.test_to_archive Coverage Results" MODIFIED="1489541518709" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/FileSorting$Unittest_BaseTestCase_test_breaking_from_archive.coverage" NAME="Unittest BaseTestCase.test_breaking_from_archive Coverage Results" MODIFIED="1489955464365" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/FileSorting$Unittest_BaseTestCase_test_to_archive.coverage" NAME="Unittest BaseTestCase.test_to_archive Coverage Results" MODIFIED="1489955065907" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/FileSorting$loaddata.coverage" NAME="loaddata Coverage Results" MODIFIED="1488165771457" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/FileSorting$Unittest_BaseTestCase_test_users_can_download.coverage" NAME="Unittest BaseTestCase.test_users_can_download Coverage Results" MODIFIED="1489456914208" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/FileSorting$Unittest_BaseTestCase_test_users_can_download.coverage" NAME="Unittest BaseTestCase.test_users_can_download Coverage Results" MODIFIED="1489954762234" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/FileSorting$FileSorting.coverage" NAME="FileSorting Coverage Results" MODIFIED="1489885987159" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
   <component name="CreatePatchCommitExecutor">
@@ -81,11 +80,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="testflask.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="testflask.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/testflask.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="403">
-              <caret line="192" column="52" selection-start-line="192" selection-start-column="52" selection-end-line="192" selection-end-column="52" />
+            <state relative-caret-position="462">
+              <caret line="371" column="41" selection-start-line="371" selection-start-column="41" selection-end-line="371" selection-end-column="41" />
               <folding>
                 <element signature="e#2#36#0" expanded="true" />
               </folding>
@@ -116,21 +115,31 @@
       <file leaf-file-name="filecompare.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/filecompare.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="867">
+            <state relative-caret-position="1275">
               <caret line="78" column="20" selection-start-line="78" selection-start-column="20" selection-end-line="78" selection-end-column="20" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="filetools.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="filetools.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/filetools.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2210">
+            <state relative-caret-position="2142">
               <caret line="130" column="0" selection-start-line="130" selection-start-column="0" selection-end-line="130" selection-end-column="0" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="tests.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tests.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1717">
+              <caret line="111" column="48" selection-start-line="111" selection-start-column="48" selection-end-line="111" selection-end-column="48" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -148,8 +157,8 @@
       <file leaf-file-name="FileSorting.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/FileSorting.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="88">
-              <caret line="1091" column="75" selection-start-line="0" selection-start-column="0" selection-end-line="1295" selection-end-column="0" />
+            <state relative-caret-position="9673">
+              <caret line="585" column="38" selection-start-line="585" selection-start-column="38" selection-end-line="585" selection-end-column="38" />
               <folding>
                 <element signature="e#2#11#0" expanded="true" />
               </folding>
@@ -247,9 +256,9 @@
         <option value="$PROJECT_DIR$/models.py" />
         <option value="$PROJECT_DIR$/filetools.py" />
         <option value="$PROJECT_DIR$/FileSorting.py" />
-        <option value="$PROJECT_DIR$/testflask.py" />
         <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/pathtest.py" />
+        <option value="$PROJECT_DIR$/testflask.py" />
       </list>
     </option>
   </component>
@@ -309,6 +318,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
+      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -393,8 +404,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
-      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -415,7 +424,76 @@
       <recent name="C:\Users\murli\PycharmProjects\FileSorting\static\uploads\stageone" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.pathtest">
+  <component name="RunManager" selected="Python tests.Unittest BaseTestCase.test_breaking_from_archive">
+    <configuration default="false" name="Unittest BaseTestCase.test_to_archive" type="tests" factoryName="Unittests" temporary="true" nameIsGenerated="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="FileSorting" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/testflask.py" />
+      <option name="CLASS_NAME" value="BaseTestCase" />
+      <option name="METHOD_NAME" value="test_to_archive" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_METHOD" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="PUREUNITTEST" value="true" />
+      <option name="PARAMS" value="" />
+      <option name="USE_PARAM" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="Unittest BaseTestCase.test_users_can_download" type="tests" factoryName="Unittests" temporary="true" nameIsGenerated="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="FileSorting" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/testflask.py" />
+      <option name="CLASS_NAME" value="BaseTestCase" />
+      <option name="METHOD_NAME" value="test_users_can_download" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_METHOD" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="PUREUNITTEST" value="true" />
+      <option name="PARAMS" value="" />
+      <option name="USE_PARAM" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="Unittest BaseTestCase.test_breaking_to_archive" type="tests" factoryName="Unittests" temporary="true" nameIsGenerated="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="FileSorting" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/testflask.py" />
+      <option name="CLASS_NAME" value="BaseTestCase" />
+      <option name="METHOD_NAME" value="test_breaking_to_archive" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_METHOD" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="PUREUNITTEST" value="true" />
+      <option name="PARAMS" value="" />
+      <option name="USE_PARAM" value="false" />
+      <method />
+    </configuration>
     <configuration default="false" name="Unittest BaseTestCase.test_from_archive" type="tests" factoryName="Unittests" temporary="true" nameIsGenerated="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -460,70 +538,6 @@
       <option name="PUREUNITTEST" value="true" />
       <option name="PARAMS" value="" />
       <option name="USE_PARAM" value="false" />
-      <method />
-    </configuration>
-    <configuration default="false" name="Unittests in testflask" type="tests" factoryName="Unittests" temporary="true" nameIsGenerated="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="FileSorting" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/testflask.py" />
-      <option name="CLASS_NAME" value="" />
-      <option name="METHOD_NAME" value="" />
-      <option name="FOLDER_NAME" value="" />
-      <option name="TEST_TYPE" value="TEST_SCRIPT" />
-      <option name="PATTERN" value="" />
-      <option name="USE_PATTERN" value="false" />
-      <option name="PUREUNITTEST" value="true" />
-      <option name="PARAMS" value="" />
-      <option name="USE_PARAM" value="false" />
-      <method />
-    </configuration>
-    <configuration default="false" name="Unittests in tests" type="tests" factoryName="Unittests" temporary="true" nameIsGenerated="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="FileSorting" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tests.py" />
-      <option name="CLASS_NAME" value="" />
-      <option name="METHOD_NAME" value="" />
-      <option name="FOLDER_NAME" value="" />
-      <option name="TEST_TYPE" value="TEST_SCRIPT" />
-      <option name="PATTERN" value="" />
-      <option name="USE_PATTERN" value="false" />
-      <option name="PUREUNITTEST" value="true" />
-      <option name="PARAMS" value="" />
-      <option name="USE_PARAM" value="false" />
-      <method />
-    </configuration>
-    <configuration default="false" name="pathtest" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="FileSorting" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/pathtest.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
     </configuration>
     <configuration default="true" type="DjangoTestsConfigurationType" factoryName="Django tests">
@@ -754,19 +768,19 @@
     </configuration>
     <list size="6">
       <item index="0" class="java.lang.String" itemvalue="Python.FileSorting" />
-      <item index="1" class="java.lang.String" itemvalue="Python tests.Unittest BaseTestCase.test_from_archive" />
-      <item index="2" class="java.lang.String" itemvalue="Python tests.Unittest BaseTestCase.test_breaking_from_archive" />
-      <item index="3" class="java.lang.String" itemvalue="Python tests.Unittests in testflask" />
-      <item index="4" class="java.lang.String" itemvalue="Python tests.Unittests in tests" />
-      <item index="5" class="java.lang.String" itemvalue="Python.pathtest" />
+      <item index="1" class="java.lang.String" itemvalue="Python tests.Unittest BaseTestCase.test_to_archive" />
+      <item index="2" class="java.lang.String" itemvalue="Python tests.Unittest BaseTestCase.test_users_can_download" />
+      <item index="3" class="java.lang.String" itemvalue="Python tests.Unittest BaseTestCase.test_breaking_to_archive" />
+      <item index="4" class="java.lang.String" itemvalue="Python tests.Unittest BaseTestCase.test_from_archive" />
+      <item index="5" class="java.lang.String" itemvalue="Python tests.Unittest BaseTestCase.test_breaking_from_archive" />
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python.pathtest" />
-        <item index="1" class="java.lang.String" itemvalue="Python tests.Unittests in tests" />
-        <item index="2" class="java.lang.String" itemvalue="Python tests.Unittests in testflask" />
-        <item index="3" class="java.lang.String" itemvalue="Python tests.Unittest BaseTestCase.test_breaking_from_archive" />
-        <item index="4" class="java.lang.String" itemvalue="Python tests.Unittest BaseTestCase.test_from_archive" />
+        <item index="0" class="java.lang.String" itemvalue="Python tests.Unittest BaseTestCase.test_breaking_from_archive" />
+        <item index="1" class="java.lang.String" itemvalue="Python tests.Unittest BaseTestCase.test_from_archive" />
+        <item index="2" class="java.lang.String" itemvalue="Python tests.Unittest BaseTestCase.test_breaking_to_archive" />
+        <item index="3" class="java.lang.String" itemvalue="Python tests.Unittest BaseTestCase.test_to_archive" />
+        <item index="4" class="java.lang.String" itemvalue="Python tests.Unittest BaseTestCase.test_users_can_download" />
       </list>
     </recent_temporary>
   </component>
@@ -847,39 +861,46 @@
       <option name="project" value="LOCAL" />
       <updated>1489890749169</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="added filetools.py">
+      <created>1489894184166</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1489894184166</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="Unittest_BaseTestCase_test_breaking_from_archive - 2017.03.18 at 21h 04m 01s.xml">
+    <history-entry file="Unittest_BaseTestCase_test_breaking_from_archive - 2017.03.19 at 16h 31m 05s.xml">
       <configuration name="Unittest BaseTestCase.test_breaking_from_archive" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittest_BaseTestCase_test_breaking_from_archive - 2017.03.18 at 21h 05m 00s.xml">
-      <configuration name="Unittest BaseTestCase.test_breaking_from_archive" configurationId="tests" />
+    <history-entry file="Unittest_BaseTestCase_test_breaking_to_archive - 2017.03.19 at 16h 27m 39s.xml">
+      <configuration name="Unittest BaseTestCase.test_breaking_to_archive" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittest_BaseTestCase_test_breaking_from_archive - 2017.03.18 at 21h 05m 07s.xml">
-      <configuration name="Unittest BaseTestCase.test_breaking_from_archive" configurationId="tests" />
+    <history-entry file="Unittest_BaseTestCase_test_from_archive - 2017.03.19 at 16h 30m 38s.xml">
+      <configuration name="Unittest BaseTestCase.test_from_archive" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittest_BaseTestCase_test_breaking_from_archive - 2017.03.18 at 21h 05m 11s.xml">
-      <configuration name="Unittest BaseTestCase.test_breaking_from_archive" configurationId="tests" />
+    <history-entry file="Unittest_BaseTestCase_test_users_can_download - 2017.03.19 at 15h 47m 26s.xml">
+      <configuration name="Unittest BaseTestCase.test_users_can_download" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittest_BaseTestCase_test_breaking_from_archive - 2017.03.18 at 21h 07m 00s.xml">
-      <configuration name="Unittest BaseTestCase.test_breaking_from_archive" configurationId="tests" />
+    <history-entry file="Unittest_BaseTestCase_test_users_can_download - 2017.03.19 at 16h 11m 33s.xml">
+      <configuration name="Unittest BaseTestCase.test_users_can_download" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittest_BaseTestCase_test_breaking_from_archive - 2017.03.18 at 21h 09m 16s.xml">
-      <configuration name="Unittest BaseTestCase.test_breaking_from_archive" configurationId="tests" />
+    <history-entry file="Unittest_BaseTestCase_test_users_can_download - 2017.03.19 at 16h 11m 45s.xml">
+      <configuration name="Unittest BaseTestCase.test_users_can_download" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittest_TestToArchive_test_file_to_archive - 2017.03.14 at 21h 25m 23s.xml">
-      <configuration name="Unittest TestToArchive.test_file_to_archive" configurationId="tests" />
+    <history-entry file="Unittest_BaseTestCase_test_users_can_download - 2017.03.19 at 16h 16m 51s.xml">
+      <configuration name="Unittest BaseTestCase.test_users_can_download" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_in_testflask - 2017.03.18 at 22h 20m 44s.xml">
-      <configuration name="Unittests in testflask" configurationId="tests" />
+    <history-entry file="Unittest_BaseTestCase_test_users_can_download - 2017.03.19 at 16h 17m 02s.xml">
+      <configuration name="Unittest BaseTestCase.test_users_can_download" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_in_testflask - 2017.03.18 at 22h 21m 39s.xml">
-      <configuration name="Unittests in testflask" configurationId="tests" />
+    <history-entry file="Unittest_BaseTestCase_test_users_can_download - 2017.03.19 at 16h 18m 11s.xml">
+      <configuration name="Unittest BaseTestCase.test_users_can_download" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_in_tests - 2017.03.18 at 22h 23m 14s.xml">
-      <configuration name="Unittests in tests" configurationId="tests" />
+    <history-entry file="Unittest_BaseTestCase_test_users_can_download - 2017.03.19 at 16h 19m 23s.xml">
+      <configuration name="Unittest BaseTestCase.test_users_can_download" configurationId="tests" />
     </history-entry>
   </component>
   <component name="TodoView">
@@ -895,13 +916,13 @@
     <frame x="-8" y="-8" width="2576" height="1416" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.26033387" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.26828298" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32970452" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33048213" sideWeight="0.5063593" order="6" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18879174" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32970452" sideWeight="0.49841017" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33048213" sideWeight="0.4936407" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.23561431" sideWeight="0.49841017" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.23561431" sideWeight="0.49841017" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Floobits" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3289269" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32970452" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
@@ -954,7 +975,8 @@
     <MESSAGE value="stuff" />
     <MESSAGE value="fixed pathing and file version" />
     <MESSAGE value="added tests" />
-    <option name="LAST_COMMIT_MESSAGE" value="added tests" />
+    <MESSAGE value="added filetools.py" />
+    <option name="LAST_COMMIT_MESSAGE" value="added filetools.py" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1217,24 +1239,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1717">
-          <caret line="111" column="48" selection-start-line="111" selection-start-column="48" selection-end-line="111" selection-end-column="48" />
-          <folding>
-            <element signature="e#1#10#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/models.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="4632">
           <caret line="1208" column="0" selection-start-line="1208" selection-start-column="0" selection-end-line="1208" selection-end-column="0" />
-          <folding>
-            <element signature="e#1#10#0" expanded="false" />
-            <element signature="e#4241#4451#1" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1254,7 +1262,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="3179">
           <caret line="187" column="14" selection-start-line="187" selection-start-column="14" selection-end-line="187" selection-end-column="14" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1286,18 +1293,12 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="37">
           <caret line="231" column="41" selection-start-line="231" selection-start-column="41" selection-end-line="231" selection-end-column="41" />
-          <folding>
-            <element signature="n#style#0;n#div#79;n#body#0;n#html#0;n#!!top" expanded="false" />
-            <element signature="n#style#0;n#div#806;n#body#0;n#html#0;n#!!top" expanded="false" />
-            <element signature="n#style#0;n#div#1149;n#body#0;n#html#0;n#!!top" expanded="false" />
-            <element signature="n#style#0;n#div#1287;n#body#0;n#html#0;n#!!top" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/filecompare.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="867">
+        <state relative-caret-position="1275">
           <caret line="78" column="20" selection-start-line="78" selection-start-column="20" selection-end-line="78" selection-end-column="20" />
           <folding />
         </state>
@@ -1315,17 +1316,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="187">
           <caret line="11" column="8" selection-start-line="11" selection-start-column="8" selection-end-line="11" selection-end-column="8" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/testflask.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="403">
-          <caret line="192" column="52" selection-start-line="192" selection-start-column="52" selection-end-line="192" selection-end-column="52" />
-          <folding>
-            <element signature="e#2#36#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1333,7 +1323,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="425">
           <caret line="25" column="89" selection-start-line="25" selection-start-column="89" selection-end-line="25" selection-end-column="89" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1345,10 +1334,18 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/tests.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1717">
+          <caret line="111" column="48" selection-start-line="111" selection-start-column="48" selection-end-line="111" selection-end-column="48" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/FileSorting.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="88">
-          <caret line="1091" column="75" selection-start-line="0" selection-start-column="0" selection-end-line="1295" selection-end-column="0" />
+        <state relative-caret-position="9673">
+          <caret line="585" column="38" selection-start-line="585" selection-start-column="38" selection-end-line="585" selection-end-column="38" />
           <folding>
             <element signature="e#2#11#0" expanded="true" />
           </folding>
@@ -1357,10 +1354,20 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/filetools.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2210">
+        <state relative-caret-position="2142">
           <caret line="130" column="0" selection-start-line="130" selection-start-column="0" selection-end-line="130" selection-end-column="0" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/testflask.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="462">
+          <caret line="371" column="41" selection-start-line="371" selection-start-column="41" selection-end-line="371" selection-end-column="41" />
+          <folding>
+            <element signature="e#2#36#0" expanded="true" />
           </folding>
         </state>
       </provider>

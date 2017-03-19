@@ -26,6 +26,13 @@ roles = [("stageone", "stage one"), ("stagetwo", "stage two"),
          ("admin", "admin"), ("superadmin", "super admin")]
 
 
+def fix_format(path):
+    if sys.platform == 'linux' or sys.platform == 'linux2':
+        return (path).strip('/')
+    else:
+        return path
+
+
 class TestCaseWithPeewee(TestCase):
 
     __metaclass__ = ABCMeta
@@ -183,9 +190,12 @@ class BaseTestCase(TestCaseWithPeewee):
         info = {'type_choice': 'transcript', 'directory_choices': 1,
                 'upload': (BytesIO(b'adawfaf'), 'work.txt')}
         response = self.client.post(url_for('index'), data=info, content_type='multipart/form-data')
-        download_response = self.client.get('/uploads/{}/{}'.format(UPLOAD_FOLDER+upload_path["stageone"], info['upload'][1]))
-        self.assertEquals(fileName.encode('UTF-8'), download_response.data)
+        # download_response = self.client.get('/uploads/{}/{}'.format((UPLOAD_FOLDER+upload_path["stageone"]), info['upload'][1]))
+        download_response = self.client.get(url_for('downloads', directory=(
+            UPLOAD_FOLDER+upload_path["stageone"]).strip('/') if sys.platform == 'linux' else \
+            UPLOAD_FOLDER+upload_path["stageone"], filename="work.txt"))
         print(download_response.data)
+        self.assertEquals(fileName.encode('UTF-8'), download_response.data)
 
     @client_context
     def test_users_profile_and_all_users(self):
@@ -314,8 +324,8 @@ class BaseTestCase(TestCaseWithPeewee):
         self.client.post(url_for('index'), data=info, content_type='multipart/form-data')
         for num in range(1, 4):
             StageOneDownload.create_entry(User.get_user(num), StageOneUpload.get_file('filenamehere.txt', 'transcript'))
-        self.client.get(url_for('to_archive', directory=UPLOAD_FOLDER+upload_path["stageone"],
-                                           filename="filenamehere.txt", filetype="transcript"))
+        self.client.get(url_for('to_archive', directory=fix_format(UPLOAD_FOLDER+upload_path["stageone"]),
+                                filename="filenamehere.txt", filetype="transcript"))
         self.assertTrue(StageOneArchive.select().count())
         self.assertEquals(StageOneArchiveDownload.select().count(), 3)
         self.assertEquals(User.get_user(1), StageOneArchiveDownload.select().get().downloaded_by)
@@ -334,7 +344,7 @@ class BaseTestCase(TestCaseWithPeewee):
         self.client.get(url_for('logout'))
         self.client.post(url_for('login'), data={'email': 'jerry@gmail.com', 'password': 'password'})
         self.client.post(url_for('index'), data=info, content_type='multipart/form-data')
-        self.client.get(url_for('to_archive', directory=UPLOAD_FOLDER + upload_path["stageone"],
+        self.client.get(url_for('to_archive', directory=fix_format(UPLOAD_FOLDER + upload_path["stageone"]),
                                 filename="filenamehere.txt", filetype="transcript"))
         self.assertEquals(2, StageOneArchive.select().count())
         self.assertFalse(os.path.isfile("{}{}{}".format(UPLOAD_FOLDER, upload_path['stageone'], "filenamehere.txt")))
@@ -353,7 +363,7 @@ class BaseTestCase(TestCaseWithPeewee):
                                                            version=1)
         self.client.post(url_for('login'), data={'email': 'jerry@gmail.com', 'password': 'password'})
         self.assertFalse(StageOneUpload.select().count())
-        self.client.get(url_for('from_archive', directory=archive_path+upload_path["stageone"],
+        self.client.get(url_for('from_archive', directory=fix_format(archive_path+upload_path["stageone"]),
                                 filename="filenamehere.txt", filetype="transcript",
                                 version=1))
         self.assertTrue(StageOneUpload.select().count())
@@ -378,7 +388,7 @@ class BaseTestCase(TestCaseWithPeewee):
         self.assertTrue(os.path.isfile(UPLOAD_FOLDER+upload_path["stageone"]+"filenamehere.txt"))
         self.assertEquals("mary", StageOneUpload.get_file("filenamehere.txt", "transcript").uploaded_by.username)
         self.client.post(url_for('login'), data={'email': 'jerry@gmail.com', 'password': 'password'})
-        self.client.get(url_for('from_archive', directory=archive_path + upload_path["stageone"],
+        self.client.get(url_for('from_archive', directory=fix_format(archive_path + upload_path["stageone"]),
                                 filename="filenamehere.txt", filetype="transcript",
                                 version=1))
         self.assertEquals(StageOneArchive.select().count(), 2)
