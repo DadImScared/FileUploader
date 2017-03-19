@@ -18,8 +18,46 @@ with open('{0}{1}local{1}auth.json'.format(dir_path, os.path.sep)) as data_file:
     data = json.load(data_file)
     key = data['key']
 
-
+#WESFGRSEFGDTSDGHGHEASG FIX CREATE_USER NEEDS TO TAKE ROLE NOT ROLES MOVE EVERYTHING TO ROLE
 class User(UserMixin, Model):
+
+    """User class for database
+
+    following methods:
+
+    class methods:
+
+    create_user
+
+    get_user
+
+    instance methods:
+
+    get_role
+
+    has_role
+
+    has_any_role
+
+    has_uploaded
+
+    all_records
+
+    create_role
+
+    delete_role
+
+    generate_email_token
+
+    static methods:
+
+    verify_email_token
+
+
+
+    """
+
+
     username = CharField(unique=True)
     email = CharField(unique=True)
     password = CharField(max_length=100)
@@ -32,7 +70,27 @@ class User(UserMixin, Model):
         order_by = ('-joined_at',)
 
     @classmethod
-    def create_user(cls, username, email, password, roles=None, admin_confirmed=False, email_confirmed=False):
+    def create_user(cls, username, email, password, role=None, admin_confirmed=False, email_confirmed=False):
+        """Adds new person to User table in database and assigns them a role/roles.
+
+
+        :param str username: A persons username
+        :param str email: A persons email
+        :param str password: A persons password
+        :param list roles: Optional. A list of roles as strings to assign to person
+        :param bool admin_confirmed: Optional. Is person confirmed by admin
+        :param bool email_confirmed: Optional. Is persons email confirmed
+        :return: object of newly created person
+
+        :raises ValueError: User already exists
+
+        :Example:
+
+        >>>import models
+        >>>new_user = models.User.create_user("usernamehere", "emailhere", "passwordhere", "rolehere")
+        <models.User object>
+        """
+
         try:
             cls.create(
                 username=username,
@@ -45,12 +103,31 @@ class User(UserMixin, Model):
             raise ValueError("User already exists")
         else:
             user = cls.get(cls.username == username)
-            if roles:
-                user.create_role(roles)
+            if role:
+                user.create_role(role)
             return user
 
     @classmethod
     def get_user(cls, id=None, username=None, email=None):
+        """Return User object
+
+        Based on an optional id, username, or email returns
+        a user object. One option is required.
+
+        :param int id: Optional id of user
+        :param str username: Optional username of user
+        :param str email: Optional email of user
+        :return: user object of selected user
+
+        :except DoesNotExist: return None
+
+        :Example:
+
+        >>>import models
+        >>>models.User.get_user(id=1)
+        <models.User object>
+        """
+
         if id:
             try:
                 user = cls.get(cls.id == id)
@@ -67,6 +144,15 @@ class User(UserMixin, Model):
                 return user
 
     def get_role(self):
+        """Return UserRole object.
+
+        Only usable on an instance of User class.
+
+        :return: UserRole Object
+
+        :except DoesNotExist: return None
+        """
+
         try:
             role = UserRole.get(UserRole.user == self)
         except DoesNotExist:
@@ -75,12 +161,30 @@ class User(UserMixin, Model):
             return role
 
     def has_role(self, role):
+        """Return UserRole object.
+
+        Based on the role provided.
+        Only usable on an instance of User class.
+
+        :param str role: name of role to check for
+        :return: UserRole Object
+        """
+
         try:
             return UserRole.get((UserRole.user == self.id) & (UserRole.role == role_by_id(role)))
         except DoesNotExist:
             return False
 
     def has_any_role(self):
+        """Return User SELECT query with INNER JOIN on UserRole table.
+
+        Only usable on an instance of User class.
+        Checks if user has any role. Returns Truthy value if they do,
+        else Falsy value.
+
+        :return: User SELECT query with INNER JOIN on UserRole table
+        """
+
         return User.select().join(
             UserRole,
             on=UserRole.user
@@ -89,12 +193,35 @@ class User(UserMixin, Model):
         )
 
     def has_uploaded(self, stage, filename, filetype):
-        print("{} {} {} {}".format(self.username, stage,filename,filetype))
+        """Returns file object or False
+
+        Can only be used on an instance of User.
+        File types are transcript/subtitle.
+
+        :param str stage: name of stage. i.e stageone, stagetwo, stagethree, stagefour
+        :param str filename: name of file
+        :param str filetype: file type
+        :return: file object or False
+
+        :except DoesNotExist: return false
+
+        :Example:
+
+        >>>import models
+        >>>user = models.User.get_user(1)
+        >>>user.has_uploaded("stageone", "filenamehere", "filetypehere")
+        False
+        or
+        if file exists
+        <models.Stagenamehere object>
+
+        """
+
         try:
             file = upload_tables[stage].get(
-                (upload_tables[stage].file_name==filename) &
-                (upload_tables[stage].file_type==filetype) &
-                (upload_tables[stage].uploaded_by==self.id)
+                (upload_tables[stage].file_name == filename) &
+                (upload_tables[stage].file_type == filetype) &
+                (upload_tables[stage].uploaded_by == self.id)
             )
         except DoesNotExist:
             try:
@@ -111,7 +238,26 @@ class User(UserMixin, Model):
             return file
 
     def get_files(self):
-        last = None
+        """Return all stage files for a user.
+
+        Returns a tuple of lists.
+        Each list represents a stage.
+
+        :return: tuple
+
+        :Example:
+
+        >>>import models
+        >>>user = models.User.get_user(1)
+        >>>files = user.get_files()
+        >>>print(files[0])
+        [<models.StageOneUpload object>, <models.StageOneUpload object>]
+        >>>print(files)
+        ([<models.StageOneUpload object>, <models.StageOneUpload object>], [], [<models.StageThreeUpload object>], [])
+
+        """
+
+        # last = None
         stage_one_files = []
         stage_two_files = []
         stage_three_files = []
@@ -135,7 +281,6 @@ class User(UserMixin, Model):
             on=(StageFourUpload.uploaded_by).alias("stagefour")
         ).where(User.id == self.id)
 
-
         for user in all_files:
             file1 = user.stageone
             file2 = user.stagetwo
@@ -144,7 +289,6 @@ class User(UserMixin, Model):
 
             if file1 not in stage_one_files and file1.file_name:
                 stage_one_files.append(file1)
-                print(file1.file_name)
             if file2 not in stage_two_files and file2.file_name:
                 stage_two_files.append(file2)
             if file3 not in stage_three_files and file3.file_name:
@@ -154,7 +298,7 @@ class User(UserMixin, Model):
         return stage_one_files, stage_two_files, stage_three_files, stage_four_files
 
     def get_downloads(self):
-        last = None
+        # last = None
         stage_one_files = []
         stage_two_files = []
         stage_three_files = []
@@ -215,7 +359,7 @@ class User(UserMixin, Model):
         return stage_one_files, stage_two_files, stage_three_files, stage_four_files
 
     def get_archive_files(self):
-        last = None
+        # last = None
         stage_one_files = []
         stage_two_files = []
         stage_three_files = []
@@ -257,13 +401,14 @@ class User(UserMixin, Model):
         return stage_one_files, stage_two_files, stage_three_files, stage_four_files
 
     def get_archive_downloads(self):
-        last = None
+        # last = None
         stage_one_files = []
         stage_two_files = []
         stage_three_files = []
         stage_four_files = []
 
-        all_files = User.select(User, StageOneArchiveDownload, StageTwoArchiveDownload,StageThreeArchiveDownload, StageFourArchiveDownload).join(
+        all_files = User.select(User, StageOneArchiveDownload, StageTwoArchiveDownload, StageThreeArchiveDownload,
+                                StageFourArchiveDownload).join(
             StageOneArchiveDownload,
             JOIN.LEFT_OUTER,
             on=(StageOneArchiveDownload.downloaded_by).alias("stageone")
@@ -330,11 +475,19 @@ class User(UserMixin, Model):
         return all_files
 
     def big_query(self):
+        """Return User select query
+
+        Made to be used with all_records method
+        see that method for example.
+
+        :return: User select query with left outer join on every stage, archive and download tables
+        """
+
         return User.select(User, StageOneUpload, StageTwoUpload, StageThreeUpload, StageFourUpload,
-                                StageOneDownload, StageTwoDownload, StageThreeDownload, StageFourDownload,
-                                StageOneArchive, StageTwoArchive, StageThreeArchive, StageFourArchive,
-                                StageOneArchiveDownload, StageTwoArchiveDownload,
-                                StageThreeArchiveDownload, StageFourArchiveDownload) \
+                           StageOneDownload, StageTwoDownload, StageThreeDownload, StageFourDownload,
+                           StageOneArchive, StageTwoArchive, StageThreeArchive, StageFourArchive,
+                           StageOneArchiveDownload, StageTwoArchiveDownload,
+                           StageThreeArchiveDownload, StageFourArchiveDownload) \
             .join(
             StageOneUpload,
             JOIN.LEFT_OUTER,
@@ -402,7 +555,39 @@ class User(UserMixin, Model):
         ).switch(User).where(User.id == self.id)
 
     def all_records(self):
-        last = None
+        """Return OrderedDict of all stages, archives, and download tables related to user
+
+        Each key returns a list of tuples with two values in each tuple.
+        The first value is the name which is a string.
+        The second value is a list.
+        The list is either empty or
+        contains file objects related to the user if there are any.
+        Look below for examples.
+
+        :return: OrderedDict of all stages, archives, and download tables related to user
+
+        :Example:
+
+        >>>import models
+        >>>user = models.User.get_user(1)
+        >>>all_files = user.all_records()
+        >>>print(all_files['stage'])
+        [('Stage One Files',
+        [<models.StageOneUpload object at 0x03D914B0>, <models.StageOneUpload object at 0x03D91CB0>]),
+        ('Stage Two Files', []), ('Stage Three Files', []), ('Stage Four Files', [])]
+        >>>print(all_files['archive'])
+        [('Stage One Archive', [<models.StageOneArchive object at 0x03D91B50>]),
+        ('Stage Two Archive', []), ('Stage Three Archive', []), ('Stage Four Archive', [])]
+        >>>print(all_files['stageDownload'])
+        [('Stage One Downloads', [<models.StageOneDownload object>, <models.StageOneDownload object>]),
+        ('Stage Two Downloads', []), ('Stage Three Downloads', []), ('Stage Four Downloads', [])]
+        >>>print(all_files['archiveDownload'])
+        [('Stage One Archive Downloads', []), ('Stage Two Archive Downloads', []),
+        ('Stage Three Archive Downloads', []), ('Stage Four Archive Downloads', [])]
+
+        """
+
+        # last = None
         stage_one_files = []
         stage_two_files = []
         stage_three_files = []
@@ -550,15 +735,59 @@ class User(UserMixin, Model):
         return everything
 
     # FIX CREATE_ROLE BECAUSE YOU CHANGED IT FROM CREATE_ROLES MAKE IT TAKE STRING NOT LIST
-    def create_role(self, roles):
-        for role in roles:
-            if not self.has_role(role):
-                try:
-                    UserRole.create(user=self.id, role=role_by_id(role))
-                except IntegrityError:
-                    pass
+    def create_role(self, role):
+        """Create UserRole Object
+
+        Only usable on an instance of User.
+        Roles that can be created.
+        stageone.
+        stagetwo.
+        stagethree.
+        stagefour.
+        admin.
+        superadmin.
+
+        :param str role: name of the role to assign the user
+        :return:
+
+        :except IntegrityError: User has role already
+        :except DoesNotExist: User doesn't exist
+
+        :Example:
+
+        >>>import models
+        >>>user = models.User.get_user(1)
+        >>>user.create_role("stageone")
+
+        """
+
+        try:
+            UserRole.create(user=self.id, role=role_by_id(role))
+        except IntegrityError:
+            pass
+        except DoesNotExist:
+            pass
 
     def delete_role(self, role=None):
+        """Delete UserRole instance
+
+        Deletes role of user if no role is used.
+        If role is used it looks for the UserRole object that has the user
+        and the role.
+
+        :param str role: name of role you would like to remove from user
+        :return: None
+
+        :except DoesNotExist: if user doesn't exist return none
+
+        :Example:
+
+        >>>import models
+        >>>user = models.User.get_user(1)
+        >>>user.delete_role()
+
+        """
+
         if role:
             try:
                 user_role = UserRole.get((UserRole.user == self) & (UserRole.role == role_by_id(role)))
@@ -576,6 +805,8 @@ class User(UserMixin, Model):
             user_role.delete_instance()
 
     def generate_email_token(self, expiration=600):
+        """Returns Serialized string with email of user"""
+
         s = Serializer(key, expires_in=expiration)
         return s.dumps({"email": self.email})
 
@@ -593,10 +824,12 @@ class User(UserMixin, Model):
 
 
 def get_users():
+    """Return list of users"""
     return User.select().order_by('-id')
 
 
 def role_by_id(role):
+    """Return role id"""
     return Role.get(Role.name == role).id
 
 
@@ -624,6 +857,7 @@ class GetStarted(Model):
 
     @classmethod
     def get_file(cls, file_name, file_type=None):
+        """Return file object"""
 
         if file_type:
             try:
@@ -638,8 +872,19 @@ class GetStarted(Model):
 
     @classmethod
     def random_records(cls, file_type, limit):
+        """Return list of 5 random file objects"""
         return cls.select().where((cls.file_type == file_type) &
                                   ~(cls.worked_on)).order_by(fn.Random()).limit(limit)
+
+    @classmethod
+    def add_file(cls, name, link, fileType):
+        """Add file to database and return file object"""
+        try:
+            return cls.create(file_name=name, file_link=link, file_type=fileType)
+        except IntegrityError:
+            raise ValueError("file already exists")
+        except DoesNotExist:
+            raise ValueError("File doesn't exist")
 
     class Meta:
         database = DATABASE
@@ -664,6 +909,14 @@ class GetStartedDownloads(Model):
 
     @classmethod
     def in_get_started_downloads(cls, filename):
+        """Return file object
+
+        This method is used to check if a file that is worked on
+        is added to stage
+
+        :param str filename: A string representing the file name
+        :return: file object
+        """
         try:
             return cls.get(cls.file == GetStarted.get_file(filename).id)
         except AttributeError:
@@ -682,12 +935,14 @@ class BaseStageDownload(Model):
 
     @classmethod
     def create_entry(cls, user, file):
+        """Return Base Stage Download object"""
         return cls.create(downloaded_by=user, file=file)
 
     @classmethod
     def get_file(cls, user, file):
+        """Return Stage Download object"""
         try:
-            return cls.get((cls.downloaded_by==user) & (cls.file==file))
+            return cls.get((cls.downloaded_by == user) & (cls.file == file))
         except DoesNotExist:
             return None
 
@@ -706,6 +961,7 @@ class BaseStageUpload(Model):
 
     @classmethod
     def create_stage_entry(cls, uploaded_by, file_name, file_type, worked_on=False):
+        """Return Stage"""
         try:
             cls.create(
                 uploaded_by=uploaded_by,
@@ -766,7 +1022,7 @@ class BaseArchiveUpload(BaseStageUpload):
     def get_archive_file(cls, filename, version=None):
         if version:
             try:
-                return cls.get((cls.file_name==filename) &  (cls.version==version))
+                return cls.get((cls.file_name==filename) & (cls.version==version))
             except DoesNotExist:
                 return None
         else:
@@ -952,6 +1208,26 @@ download_archives = {
 }
 
 
+def file_to_archive(stage, file):
+    downloads_to_file = download_tables[stage].select().where(download_tables[stage].file == file)
+    version = uploaded_archives[stage].next_file_version(file.file_name, file.file_type)
+    new_file = uploaded_archives[stage].create_archive_entry(
+        uploaded_by=file.uploaded_by.id,
+        file_name=file.file_name,
+        version=version,
+        file_type=file.file_type
+    )
+    transfer_stage_downloads(stage, new_file, downloads_to_file)
+    file.delete_instance()
+    return new_file
+
+
+def transfer_stage_downloads(stage, file, downloads):
+    for download in downloads:
+        download_archives[stage].create_entry(download.downloaded_by, file)
+        download.delete_instance()
+
+
 def file_exists(stage, file_name, file_type, uploaded_by=None):
     if uploaded_by:
         try:
@@ -1025,6 +1301,7 @@ tables = [StageOneUpload, StageTwoUpload, StageThreeUpload, StageFourUpload, Sta
           StageThreeDownload, StageFourDownload, GetStarted, GetStartedDownloads,
           StageOneArchive, StageTwoArchive, StageThreeArchive, StageFourArchive,
           StageOneArchiveDownload, StageTwoArchiveDownload, StageThreeArchiveDownload, StageFourArchiveDownload]
+
 
 def initialize():
     DATABASE.connect()

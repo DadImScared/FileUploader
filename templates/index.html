@@ -220,8 +220,10 @@
             data: JSON.stringify(info, null, '\t'),
             contentType: 'application/json;charset=UTF-8',
             success: function(result) {
-                $('#'+fileId).remove();
-                makeList(result['id'], fileType, result['fileName'], result['fileLink']);
+                if (result !== "error") {
+                    $('#' + fileId).remove();
+                    makeList(result['id'], fileType, result['fileName'], result['fileLink']);
+                }
                 $('.modal').modal('hide');
 
             }

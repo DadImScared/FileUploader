@@ -16,6 +16,7 @@ import models
 from models import upload_tables, uploaded_archives, download_tables, download_archives
 from decorators import async, role_required, authenticated
 from paths import get_path
+from filetools import move_file, remove_file, clone_file
 
 # ADD G.USER.HAS_ROLE('ADMIN') TO STAGE CHECK
 
@@ -39,6 +40,7 @@ app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
+app.config['MAIL_SUPPRESS_SEND'] = True
 
 
 mail = Mail(app)
@@ -97,12 +99,10 @@ def restrict_files(file_list):
     return file_list[:1]
 
 
-
 @async
 def send_async_email(app, msg):
     with app.app_context():
         mail.send(msg)
-
 
 
 def send_mail(subject, sender, recipients, text_body, html_body=None):
@@ -220,8 +220,9 @@ def reset_password(token=None):
     if token:
         form = forms.ChangePassword()
         user = models.User.verify_email_token(token)
-        login_user(user)
+
         if user:
+            login_user(user)
             return render_template('change_pass.html', form=form)
 
     if request.method == 'POST':
@@ -305,6 +306,7 @@ def edit_password():
         user = models.User.get_user(username=g.user.username)
         user.password = generate_password_hash(form.new_password.data)
         user.save()
+        flash("Password updated", "success")
         print("success")
         return redirect(url_for('edit_user', _anchor='profile'))
     flash("Invalid password", "danger")
@@ -542,15 +544,18 @@ def index():
     video_files = models.GetStarted.random_records("Video", 5)
     audio_files = models.GetStarted.random_records("Audio", 5)
     print(dir_path.split("\\"))
+
     if form.validate_on_submit():
         directory_choice = form.directory_choices.data
         file_type = form.type_choice.data
-
+        print("file uploaded")
         # Gets sub directory and removes whitespace " stage one " becomes " stageone "
         path = uploads[directory_choice].replace(" ", "")
 
         if allowed_file(form.upload.data.filename):
             filename = secure_filename(form.upload.data.filename)
+            print(form.type_choice.data)
+            print(form.directory_choices.data)
             print(form.upload.data.filename)
             no_extension = form.upload.data.filename.rsplit('.', 1)[0]
 
@@ -603,6 +608,7 @@ def index():
                       render_template('admin/email.txt', user=g.user._get_current_object(),
                                       message='uploaded {} to {}'.format(created_file.file_name,path)))
             form.upload.data.save("{}{}{}".format(UPLOAD_FOLDER, upload_path[path],filename))
+            flash("File uploaded", "success")
             return redirect(url_for('index'))
 
     return render_template('index.html', form=form, video_files=video_files, audio_files=audio_files)
@@ -721,6 +727,8 @@ def users(id=None):
         #                        stage_two_files=files[1],
         #                        stage_three_files=files[2],
         #                        stage_four_files=files[3])
+        if not user:
+            abort(404)
         all_files = user.all_records()
         return render_template('admin/user.html', user=user, all_files=all_files)
                                # # stage 1-4
@@ -765,7 +773,7 @@ def register_users():
         user = models.User.create_user(form.username.data.strip(),
                                 form.email.data.strip(),
                                 form.password.data,
-                                [form.roles.data], True)
+                                form.roles.data, True)
         flash("User registered", "success")
         token = user.generate_email_token().decode('ascii')
         # add email stuff
@@ -895,19 +903,25 @@ def get_started():
     file = models.GetStarted.get_file(info['fileName'], info['fileType'])
     file.worked_on = True
     file.save()
-    new_record = models.GetStarted.random_records(info['fileType'], 1).get()
+    new_record = {}
+    try:
+        new_record = models.GetStarted.random_records(info['fileType'], 1).get()
+    except models.DoesNotExist:
+        pass
+    else:
+        new_record = {
+            "id": new_record.id,
+            "fileName": new_record.file_name,
+            "fileLink": new_record.file_link
+        }
     models.GetStartedDownloads.create_entry(user=g.user._get_current_object(),
                                             file=file.id)
     send_mail('File info', sender_email, [g.user.email],
               render_template('admin/getstartedemail.txt', file=file))
     send_mail('User getting started', sender_email, [receiver], "{} got started on {}".format(g.user.username,
                                                                                               file.file_link))
-    new_record = {
-        "id": new_record.id,
-        "fileName": new_record.file_name,
-        "fileLink": new_record.file_link
-    }
-    return jsonify(new_record), 200
+
+    return jsonify(new_record if new_record else "error"), 200
 
 
 @app.route('/admin/confirmandregister', methods=('POST',))
@@ -917,7 +931,7 @@ def confirm_assign():
     user = models.User.get_user(username=info['name'])
     user.admin_confirmed = True
     user.save()
-    user.create_role([info['role']])
+    user.create_role(info['role'])
     return jsonify("success"), 200
 
 
@@ -930,7 +944,7 @@ def assign_role():
         return redirect(url_for('users'))
     if user.has_any_role():
         user.get_role().delete_instance()
-    user.create_role([info['role']])
+    user.create_role(info['role'])
     user.save()
     return jsonify(info['name'] + " " + info['role']), 200
 
@@ -1068,153 +1082,212 @@ def delete_files(directory, filename, filetype, version=None):
 @app.route('/toarchive/<path:directory>/<filename>/<filetype>', methods=('GET', 'POST'))
 @role_required(["admin", "superadmin"])
 def to_archive(directory, filename, filetype):
-
-    # steps for moving a file from main stage to archive of appropriate stage
-
-    # gets sub directory from full directory path
-    # example 'C:\\Users\\murli\\PycharmProjects\\FileSorting\\static\\uploads\\stageone\\'
-    # ['C:', 'Users', 'murli', 'PycharmProjects', 'FileSorting', 'static', 'uploads', 'stageone', '']
-    # second to last = sub_directory
-    #                                                has to be like this because extra space at the end like above
     sub_directory = directory.split('{}'.format(sep))[-1 if "/" in directory else -2]
-    # get file in main stage
-    print(directory)
-    print(sub_directory)
-    stage_file = upload_tables[sub_directory].get((upload_tables[sub_directory].file_name == filename) &
-                                                  (upload_tables[sub_directory].file_type == filetype))
-    # check if file already exists in archive
-    try:
-        uploaded_archives[sub_directory].get((uploaded_archives[sub_directory].file_name == filename) &
-                                             (uploaded_archives[sub_directory].file_type == filetype))
-    except models.DoesNotExist:
-        # if it doesn't exist in archive create an archive entry
-        version = 1
-        archive_file = uploaded_archives[sub_directory].create_archive_entry(uploaded_by=stage_file.uploaded_by_id, file_name=filename,
-                                                            version=version, file_type=filetype)
-        # actually move file from main stage directory to archive directory
-        os.rename("{}{}{}".format(UPLOAD_FOLDER, upload_path[sub_directory], filename), "{}{}[{}]{}".format(archive_path, upload_path[sub_directory],
-                                                                             version, filename))
-        send_mail('File to archive', sender_email, [receiver], "{} has moved {} to the {} archive".format(
-            g.user.username, filename, sub_directory
-        ))
-        # delete stage_file from stage table
-        download_entry = download_tables[sub_directory].get_file(g.user._get_current_object(), stage_file)
-        if download_entry:
-            download_entry.delete_instance()
-        stage_file.delete_instance()
-        download_archives[sub_directory].create_entry(g.user._get_current_object(), archive_file)
-        flash("File moved!", "success")
+    file = upload_tables[sub_directory].get_file(filename, filetype)
+    file_exists = models.file_in_archive(sub_directory, file.file_name, file.file_type,
+                                         uploaded_by=file.uploaded_by)
+    if file_exists:
+        models.transfer_stage_downloads(sub_directory, file_exists,
+                                        [download for download in download_tables[sub_directory].select().where(
+                                            download_tables[sub_directory].file == file
+                                        )])
+        remove_file(UPLOAD_FOLDER+upload_path[sub_directory], file.file_name)
+        file.delete_instance()
         return redirect(url_for('admin_files'))
-    else:
-        try:
-            uploaded_archives[sub_directory].get((uploaded_archives[sub_directory].file_name == filename) &
-                                                 (uploaded_archives[sub_directory].file_type == filetype) &
-                                                 (uploaded_archives[sub_directory].uploaded_by == stage_file.uploaded_by))
-        except models.DoesNotExist:
-            # if it exists
-            # get number of versions
-            version = uploaded_archives[sub_directory].select().where(
-                (uploaded_archives[sub_directory].file_name == filename) &
-                (uploaded_archives[sub_directory].file_type == filetype)
-            ).count() + 1
-            # create archive entry with appropriate version
-            archive_file = uploaded_archives[sub_directory].create_archive_entry(uploaded_by=stage_file.uploaded_by_id, file_name=filename,
-                                                                  version=version, file_type=filetype)
-            # actually move file from main stage to archive directory
-            os.rename("{}{}{}".format(UPLOAD_FOLDER, upload_path[sub_directory], filename), "{}{}[{}]{}".format(archive_path, upload_path[sub_directory],
-                                                                                 version, filename))
-            # delete stage_file from stage table
-            send_mail('File to archive', sender_email, [receiver], "{} has moved {} to the {} archive".format(
-                g.user.username, filename, sub_directory
-            ))
-            download_entry = download_tables[sub_directory].get_file(g.user._get_current_object(), stage_file)
-            if download_entry:
-                download_entry.delete_instance()
-            stage_file.delete_instance()
-            download_archives[sub_directory].create_entry(g.user._get_current_object(), archive_file)
-            flash("File moved!", "success")
-            return redirect(url_for('admin_files'))
-        else:
-            flash("file moved", "success")
-            # don't forget to actually remove the file from the folder!!!!
-            os.remove("{}{}{}".format(UPLOAD_FOLDER, upload_path[sub_directory], stage_file.file_name))
-            send_mail('File to archive', sender_email, [receiver], "{} has moved {} to the {} archive".format(
-                g.user.username, filename, sub_directory
-            ))
-            download_entries = download_tables[sub_directory].select().where(
-                download_tables[sub_directory].file == stage_file)
-            for item in download_entries:
-                item.delete_instance()
-            stage_file.delete_instance()
-            return redirect(url_for('admin_files'))
+    archive_file = models.file_to_archive(sub_directory, file)
+    move_file(
+        "{}{}{}".format(UPLOAD_FOLDER, upload_path[sub_directory], file.file_name),
+        "{}{}[{}]{}".format(archive_path, upload_path[sub_directory], archive_file.version, archive_file.file_name)
+    )
+    return redirect(url_for('admin_files'))
 
 
-# add flash messages before return redirects!!!!
 @app.route('/fromarchive/<path:directory>/<filename>/<filetype>/<int:version>', methods=('GET', 'POST'))
 @role_required(["admin", "superadmin"])
 def from_archive(directory, filename, filetype, version):
     sub_directory = directory.split('{}'.format(sep))[-1 if "/" in directory else -2]
-    new_file = uploaded_archives[sub_directory].get((uploaded_archives[sub_directory].file_name==filename)
-    & (uploaded_archives[sub_directory].file_type==filetype) &
-    (uploaded_archives[sub_directory].version==version))
-    try:
-        # checks if a version of the new_file or new_file exists in main stage
-        old_file = upload_tables[sub_directory].get((upload_tables[sub_directory].file_name==filename) &
-        (upload_tables[sub_directory].file_type==filetype))
-        worked_on = old_file.worked_on
-    except models.DoesNotExist:
-        # if no file in main stage already create entry of new_file in main stage table and copy actual file over
-        upload_tables[sub_directory].create_stage_entry(uploaded_by=new_file.uploaded_by_id,
-                                                        file_name=filename, file_type=filetype)
-        copyfile("{}{}[{}]{}".format(archive_path, upload_path[sub_directory], new_file.version, new_file.file_name),
-                 "{}{}{}".format(UPLOAD_FOLDER, upload_path[sub_directory], new_file.file_name))
-        send_mail('File to stage', sender_email, [receiver], "{} has moved {} to {}".format(
-            g.user.username, filename, sub_directory
-        ))
-        return redirect(url_for('archive_files'))
-    else:
-        # if a version of new_file is in main stage check if it's in archive also
-        try:
-            uploaded_archives[sub_directory].get((uploaded_archives[sub_directory].uploaded_by==old_file.uploaded_by) &
-                                                 (uploaded_archives[sub_directory].file_name==filename) &
-                                                 (uploaded_archives[sub_directory].file_type==filetype))
-        except models.DoesNotExist:
-            # get next version number available
-            version =  uploaded_archives[sub_directory].next_file_version(file_name=filename, file_type=filetype)
-            # create archive entry
-            uploaded_archives[sub_directory].create_archive_entry(uploaded_by=old_file.uploaded_by_id,
-                                                                  file_name=old_file.file_name,
-                                                                  version=version,
-                                                                  file_type=old_file.file_type,
-                                                                  worked_on=worked_on)
-            # actually move file from main stage to archive here
-            os.rename("{}{}{}".format(UPLOAD_FOLDER, upload_path[sub_directory], old_file.file_name),
-                      "{}{}[{}]{}".format(archive_path, upload_path[sub_directory],
-                                            version, old_file.file_name))
-            old_file.delete_instance()
-            upload_tables[sub_directory].create_stage_entry(uploaded_by=new_file.uploaded_by_id,
-                                                            file_name=filename, file_type=filetype)
-            copyfile(
-                "{}{}[{}]{}".format(archive_path, upload_path[sub_directory], new_file.version, new_file.file_name),
-                "{}{}{}".format(UPLOAD_FOLDER, upload_path[sub_directory], new_file.file_name))
-            send_mail('File to stage', sender_email, [receiver], "{} has moved {} to {}".format(
-                g.user.username, filename, sub_directory
-            ))
-            return redirect(url_for('archive_files'))
+    # archive file to move from archive
+    transfer_file = uploaded_archives[sub_directory].get_archive_file(filename, version)
+    # check if file exists in main stage already
+    file_exists = upload_tables[sub_directory].get_file(filename)
+    if file_exists:
+        # check if stage file exists in archive
+        in_archive = models.file_in_archive(sub_directory, file_exists.file_name, file_exists.file_type,
+                                            uploaded_by=file_exists.uploaded_by)
+        if not in_archive:
+            in_archive = models.file_to_archive(sub_directory, file_exists)
+            move_file(
+                "{}{}{}".format(UPLOAD_FOLDER, upload_path[sub_directory], file_exists.file_name),
+                "{}{}[{}]{}".format(archive_path, upload_path[sub_directory],
+                                    in_archive.version, in_archive.file_name)
+            )
         else:
-            # if old_file is in archive already delete instance of old_file in main stage table
-            os.remove("{}{}{}".format(UPLOAD_FOLDER, upload_path[sub_directory], old_file.file_name))
-            old_file.delete_instance()
-            # and save new_file in main stage and copy actual file from archive folder to main stage folder
-            upload_tables[sub_directory].create_stage_entry(uploaded_by=new_file.uploaded_by_id,
-                                                            file_name=filename, file_type=filetype)
-            copyfile(
-                "{}{}[{}]{}".format(archive_path, upload_path[sub_directory], new_file.version, new_file.file_name),
-                "{}{}{}".format(UPLOAD_FOLDER, upload_path[sub_directory], new_file.file_name))
-            send_mail('File to stage', sender_email, [receiver], "{} has moved {} to {}".format(
-                g.user.username, filename, sub_directory
-            ))
-            return redirect(url_for('archive_files'))
+            models.transfer_stage_downloads(sub_directory, file_exists,
+                                            [download for download in download_tables[sub_directory].select().where(
+                                                download_tables[sub_directory].file == file_exists
+                                            )])
+            remove_file(UPLOAD_FOLDER + upload_path[sub_directory], file_exists.file_name)
+        file_exists.delete_instance()
+    upload_tables[sub_directory].create_stage_entry(uploaded_by=transfer_file.uploaded_by,
+                                                    file_name=transfer_file.file_name,
+                                                    file_type=transfer_file.file_type)
+    clone_file(
+        "{}{}[{}]{}".format(archive_path, upload_path[sub_directory], transfer_file.version, transfer_file.file_name),
+        "{}{}{}".format(UPLOAD_FOLDER, upload_path[sub_directory], transfer_file.file_name)
+    )
+    return redirect(url_for('archive_files'))
+
+
+# @app.route('/toarchive/<path:directory>/<filename>/<filetype>', methods=('GET', 'POST'))
+# @role_required(["admin", "superadmin"])
+# def to_archive(directory, filename, filetype):
+#
+#     # steps for moving a file from main stage to archive of appropriate stage
+#
+#     # gets sub directory from full directory path
+#     # example 'C:\\Users\\murli\\PycharmProjects\\FileSorting\\static\\uploads\\stageone\\'
+#     # ['C:', 'Users', 'murli', 'PycharmProjects', 'FileSorting', 'static', 'uploads', 'stageone', '']
+#     # second to last = sub_directory
+#     #                                                has to be like this because extra space at the end like above
+#     sub_directory = directory.split('{}'.format(sep))[-1 if "/" in directory else -2]
+#     # get file in main stage
+#     print(directory)
+#     print(sub_directory)
+#     stage_file = upload_tables[sub_directory].get((upload_tables[sub_directory].file_name == filename) &
+#                                                   (upload_tables[sub_directory].file_type == filetype))
+#     # check if file already exists in archive
+#     try:
+#         uploaded_archives[sub_directory].get((uploaded_archives[sub_directory].file_name == filename) &
+#                                              (uploaded_archives[sub_directory].file_type == filetype))
+#     except models.DoesNotExist:
+#         # if it doesn't exist in archive create an archive entry
+#         version = 1
+#         archive_file = uploaded_archives[sub_directory].create_archive_entry(uploaded_by=stage_file.uploaded_by_id, file_name=filename,
+#                                                             version=version, file_type=filetype)
+#         # actually move file from main stage directory to archive directory
+#         os.rename("{}{}{}".format(UPLOAD_FOLDER, upload_path[sub_directory], filename), "{}{}[{}]{}".format(archive_path, upload_path[sub_directory],
+#                                                                              version, filename))
+#         send_mail('File to archive', sender_email, [receiver], "{} has moved {} to the {} archive".format(
+#             g.user.username, filename, sub_directory
+#         ))
+#         # delete stage_file from stage table
+#         download_entry = download_tables[sub_directory].get_file(g.user._get_current_object(), stage_file)
+#         if download_entry:
+#             download_entry.delete_instance()
+#         stage_file.delete_instance()
+#         download_archives[sub_directory].create_entry(g.user._get_current_object(), archive_file)
+#         flash("File moved!", "success")
+#         return redirect(url_for('admin_files'))
+#     else:
+#         try:
+#             uploaded_archives[sub_directory].get((uploaded_archives[sub_directory].file_name == filename) &
+#                                                  (uploaded_archives[sub_directory].file_type == filetype) &
+#                                                  (uploaded_archives[sub_directory].uploaded_by == stage_file.uploaded_by))
+#         except models.DoesNotExist:
+#             # if it exists
+#             # get number of versions
+#             version = uploaded_archives[sub_directory].select().where(
+#                 (uploaded_archives[sub_directory].file_name == filename) &
+#                 (uploaded_archives[sub_directory].file_type == filetype)
+#             ).count() + 1
+#             # create archive entry with appropriate version
+#             archive_file = uploaded_archives[sub_directory].create_archive_entry(uploaded_by=stage_file.uploaded_by_id, file_name=filename,
+#                                                                   version=version, file_type=filetype)
+#             # actually move file from main stage to archive directory
+#             os.rename("{}{}{}".format(UPLOAD_FOLDER, upload_path[sub_directory], filename), "{}{}[{}]{}".format(archive_path, upload_path[sub_directory],
+#                                                                                  version, filename))
+#             # delete stage_file from stage table
+#             send_mail('File to archive', sender_email, [receiver], "{} has moved {} to the {} archive".format(
+#                 g.user.username, filename, sub_directory
+#             ))
+#             download_entry = download_tables[sub_directory].get_file(g.user._get_current_object(), stage_file)
+#             if download_entry:
+#                 download_entry.delete_instance()
+#             stage_file.delete_instance()
+#             download_archives[sub_directory].create_entry(g.user._get_current_object(), archive_file)
+#             flash("File moved!", "success")
+#             return redirect(url_for('admin_files'))
+#         else:
+#             flash("file moved", "success")
+#             # don't forget to actually remove the file from the folder!!!!
+#             os.remove("{}{}{}".format(UPLOAD_FOLDER, upload_path[sub_directory], stage_file.file_name))
+#             send_mail('File to archive', sender_email, [receiver], "{} has moved {} to the {} archive".format(
+#                 g.user.username, filename, sub_directory
+#             ))
+#             download_entries = download_tables[sub_directory].select().where(
+#                 download_tables[sub_directory].file == stage_file)
+#             for item in download_entries:
+#                 item.delete_instance()
+#             stage_file.delete_instance()
+#             return redirect(url_for('admin_files'))
+
+
+# add flash messages before return redirects!!!!
+# @app.route('/fromarchive/<path:directory>/<filename>/<filetype>/<int:version>', methods=('GET', 'POST'))
+# @role_required(["admin", "superadmin"])
+# def from_archive(directory, filename, filetype, version):
+#     sub_directory = directory.split('{}'.format(sep))[-1 if "/" in directory else -2]
+#     new_file = uploaded_archives[sub_directory].get((uploaded_archives[sub_directory].file_name==filename)
+#     & (uploaded_archives[sub_directory].file_type==filetype) &
+#     (uploaded_archives[sub_directory].version==version))
+#     try:
+#         # checks if a version of the new_file or new_file exists in main stage
+#         old_file = upload_tables[sub_directory].get((upload_tables[sub_directory].file_name==filename) &
+#         (upload_tables[sub_directory].file_type==filetype))
+#         worked_on = old_file.worked_on
+#     except models.DoesNotExist:
+#         # if no file in main stage already create entry of new_file in main stage table and copy actual file over
+#         upload_tables[sub_directory].create_stage_entry(uploaded_by=new_file.uploaded_by_id,
+#                                                         file_name=filename, file_type=filetype)
+#         copyfile("{}{}[{}]{}".format(archive_path, upload_path[sub_directory], new_file.version, new_file.file_name),
+#                  "{}{}{}".format(UPLOAD_FOLDER, upload_path[sub_directory], new_file.file_name))
+#         send_mail('File to stage', sender_email, [receiver], "{} has moved {} to {}".format(
+#             g.user.username, filename, sub_directory
+#         ))
+#         return redirect(url_for('archive_files'))
+#     else:
+#         # if a version of new_file is in main stage check if it's in archive also
+#         try:
+#             uploaded_archives[sub_directory].get((uploaded_archives[sub_directory].uploaded_by==old_file.uploaded_by) &
+#                                                  (uploaded_archives[sub_directory].file_name==filename) &
+#                                                  (uploaded_archives[sub_directory].file_type==filetype))
+#         except models.DoesNotExist:
+#             # get next version number available
+#             version =  uploaded_archives[sub_directory].next_file_version(file_name=filename, file_type=filetype)
+#             # create archive entry
+#             uploaded_archives[sub_directory].create_archive_entry(uploaded_by=old_file.uploaded_by_id,
+#                                                                   file_name=old_file.file_name,
+#                                                                   version=version,
+#                                                                   file_type=old_file.file_type,
+#                                                                   worked_on=worked_on)
+#             # actually move file from main stage to archive here
+#             os.rename("{}{}{}".format(UPLOAD_FOLDER, upload_path[sub_directory], old_file.file_name),
+#                       "{}{}[{}]{}".format(archive_path, upload_path[sub_directory],
+#                                             version, old_file.file_name))
+#             old_file.delete_instance()
+#             upload_tables[sub_directory].create_stage_entry(uploaded_by=new_file.uploaded_by_id,
+#                                                             file_name=filename, file_type=filetype)
+#             copyfile(
+#                 "{}{}[{}]{}".format(archive_path, upload_path[sub_directory], new_file.version, new_file.file_name),
+#                 "{}{}{}".format(UPLOAD_FOLDER, upload_path[sub_directory], new_file.file_name))
+#             send_mail('File to stage', sender_email, [receiver], "{} has moved {} to {}".format(
+#                 g.user.username, filename, sub_directory
+#             ))
+#             return redirect(url_for('archive_files'))
+#         else:
+#             # if old_file is in archive already delete instance of old_file in main stage table
+#             os.remove("{}{}{}".format(UPLOAD_FOLDER, upload_path[sub_directory], old_file.file_name))
+#             old_file.delete_instance()
+#             # and save new_file in main stage and copy actual file from archive folder to main stage folder
+#             upload_tables[sub_directory].create_stage_entry(uploaded_by=new_file.uploaded_by_id,
+#                                                             file_name=filename, file_type=filetype)
+#             copyfile(
+#                 "{}{}[{}]{}".format(archive_path, upload_path[sub_directory], new_file.version, new_file.file_name),
+#                 "{}{}{}".format(UPLOAD_FOLDER, upload_path[sub_directory], new_file.file_name))
+#             send_mail('File to stage', sender_email, [receiver], "{} has moved {} to {}".format(
+#                 g.user.username, filename, sub_directory
+#             ))
+#             return redirect(url_for('archive_files'))
 
 if __name__ == '__main__':
     app.run(debug=True)

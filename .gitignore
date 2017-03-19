@@ -6,3 +6,5 @@ donetranscripts.txt
 /js/
 /static/uploads/
 people.db
+/static/testing/
+pathtest.py
