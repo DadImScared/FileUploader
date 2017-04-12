@@ -15,24 +15,27 @@ STAGE_ONE_UPLOADS = "stageone{}".format(os.path.sep)
 STAGE_TWO_UPLOADS = "stagetwo{}".format(os.path.sep)
 STAGE_THREE_UPLOADS = "stagethree{}".format(os.path.sep)
 STAGE_FOUR_UPLOADS = "stagefour{}".format(os.path.sep)
+FINISHED_FILES_UPLOADS = "finishedfiles{}".format(os.path.sep)
 
 uploads = {
     1: "stage one",
     2: "stage two",
     3: "stage three",
-    4: "stage four"
+    4: "stage four",
+    5: "finished files"
 }
 
 upload_path = {
     "stageone": STAGE_ONE_UPLOADS,
     "stagetwo": STAGE_TWO_UPLOADS,
     "stagethree": STAGE_THREE_UPLOADS,
-    "stagefour": STAGE_FOUR_UPLOADS
+    "stagefour": STAGE_FOUR_UPLOADS,
+    "finishedfiles": FINISHED_FILES_UPLOADS
 }
 
 directories = [
     ("stageone", "stage one"), ("stagetwo", "stage two"),
-    ("stagethree", "stage three"), ("stagefour", "stage four")
+    ("stagethree", "stage three"), ("stagefour", "stage four"), ("finishedfiles", "finished files")
 ]
 
 

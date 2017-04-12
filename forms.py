@@ -81,6 +81,7 @@ class EditForm(Form):
         ]
     )
 
+
 class EditPassword(Form):
     confirm_password = PasswordField(
         'Confirm password',
@@ -94,6 +95,11 @@ class EditPassword(Form):
         'Confirm new password',
         validators=[DataRequired()]
     )
+
+
+class EditFile(Form):
+    google_doc = StringField("Google doc link")
+    amara = StringField("Amara link")
 
 
 class ChangePassword(Form):
@@ -120,6 +126,7 @@ class UploadForm(Form):
     directory_choices = SelectField(coerce=int)
     upload = FileField('File', validators=[DataRequired()])
     google_doc = StringField("Google Doc link")
+    amara = StringField("Amara link")
 
 
 class AdminUploadForm(UploadForm):

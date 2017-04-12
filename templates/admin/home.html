@@ -7,35 +7,60 @@
         <div class="container mt-2" id="main-body">
             <div class="row pt-2">
                 <div class="col-md-6">
-                <ul id="unconfirmed-people" class="list-group pb-2">
-                    {% for person in unconfirmed_users %}
-                        <li id="{{ person.username }}" class="list-group-item">
-                            <div class="row ">
-                                <div class="col-md-6 col-xs-12 center-text">
-                                    <p id="person-email">{{ person.email }}</p>
-                                </div>
-                                {% if person.has_any_role() %}
-                                    <button class="toggle-button button-styles btn btn-sm col-md-6 col-xs-12">Confirm</button>
-{#                                    <a id="submit" class="btn btn-sm col-md-6 col-xs-12" href="#" role="button">Confirm</a>#}
-                                {% else %}
-                                    <button data-toggle="modal" data-target="#exampleModalLong" class="toggle-button button-styles btn btn-sm col-md-6 col-xs-12">Confirm and assign role</button>
-{#                                    <a id="submit" class="btn btn-sm col-md-6 col-xs-12" href="#" role="button">Confirm and assign role </a>#}
-                                {% endif %}
+                    <ul id="unconfirmed-people" class="list-group pb-2">
+                        {% for person in unassigned_users %}
+                            <li id="{{ person.username }}" class="list-group-item">
+                                <div class="row">
+                                    <div class="col-md-6 col-xs-12 center-text">
+                                        <p>{{ person.email }}</p>
+                                    </div>
+                                    {% if person.has_any_role() %}
+                                        <button class="toggle-button button-styles btn btn-sm col-md-6 col-xs-12">Confirm</button>
 
+                                    {% else %}
+                                        <button data-toggle="modal" data-target="#exampleModalLong" class="toggle-button
+                                         button-styles btn btn-sm col-md-6 col-xs-12">
+                                        {% if person.admin_confirmed %}
+                                            Assign role
+                                        {% else %}
+                                            Confirm and assign role
+                                        {% endif %}
+                                        </button>
+
+                                    {% endif %}
                                 </div>
-                        </li>
-                    {% endfor %}
-                    {% for person in unassigned_users %}
-                        <li id="{{ person.username }}" class="list-group-item">
-                            <div class="row ">
-                                <div class="col-md-6 col-xs-12 center-text">
-                                    <p id="person-email">{{ person.email }} <span class="hidden-name">{{ person.username }}</span></p>
-                                </div>
-                                <button type="button" data-toggle="modal" data-target="#exampleModalLong" class="assign-role-btn btn btn-sm btn-primary col-md-6 col-xs-12">Assign role</button>
-                            </div>
-                        </li>
-                    {% endfor %}
-                </ul>
+                            </li>
+                        {% endfor %}
+                    </ul>
+{#                <ul id="unconfirmed-people" class="list-group pb-2">#}
+{#                    {% for person in unconfirmed_users %}#}
+{#                        <li id="{{ person.username }}" class="list-group-item">#}
+{#                            <div class="row ">#}
+{#                                <div class="col-md-6 col-xs-12 center-text">#}
+{#                                    <p id="person-email">{{ person.email }}</p>#}
+{#                                </div>#}
+{#                                {% if person.has_any_role() %}#}
+{#                                    <button class="toggle-button button-styles btn btn-sm col-md-6 col-xs-12">Confirm</button>#}
+{#                                    <a id="submit" class="btn btn-sm col-md-6 col-xs-12" href="#" role="button">Confirm</a>#}
+{#                                {% else %}#}
+{#                                    <button data-toggle="modal" data-target="#exampleModalLong" class="toggle-button button-styles btn btn-sm col-md-6 col-xs-12">Confirm and assign role</button>#}
+{#                                    <a id="submit" class="btn btn-sm col-md-6 col-xs-12" href="#" role="button">Confirm and assign role </a>#}
+{#                                {% endif %}#}
+{##}
+{#                                </div>#}
+{#                        </li>#}
+{#                    {% endfor %}#}
+{#                    {% for person in unassigned_users %}#}
+{#                        <li id="{{ person.username }}" class="list-group-item">#}
+{#                            <div class="row ">#}
+{#                                <div class="col-md-6 col-xs-12 center-text">#}
+{#                                    <p id="person-email">{{ person.email }} <span class="hidden-name">{{ person.username }}</span></p>#}
+{#                                </div>#}
+{#                                <button type="button" data-toggle="modal" data-target="#exampleModalLong" class="assign-role-btn btn btn-sm btn-primary col-md-6 col-xs-12">Assign role</button>#}
+{#                            </div>#}
+{#                        </li>#}
+{#                    {% endfor %}#}
+{#                </ul>#}
                 </div>
                 <div id="admin-form" class="col-md-6">
                 <div id="form">
@@ -71,6 +96,14 @@
                             <div id="googleLink" class="col-xs-12 col-lg-10 offset-lg-1">
                                 <button id="googleButton" type="button" class="button-styles btn btn-sm col-xs-12">Add Google doc link</button>
                                 {{ render_field(form.google_doc, type="text", class="form-control") }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div id="amaraLink" class="col-xs-12 col-lg-10 offset-lg-1">
+                                <button id="amaraButton" type="button" class="button-styles btn btn-sm col-xs-12">Add Amara link</button>
+                                {{ render_field(form.amara, type="text", class="form-control") }}
                             </div>
                         </div>
                     </div>
@@ -126,6 +159,7 @@
           </div>
       </div>
       <div class="modal-footer">
+
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         <button id="submit-button" type="button" class="btn btn-primary">Save changes</button>
       </div>
@@ -189,13 +223,22 @@
         assignedRole = $('#role-form').val();
     });
 
-    $("#google_doc").css("display", "none");
+    $("#google_doc, #amara").css("display", "none");
 
     $('#googleButton').click(function() {
         $(this).css("display", "none");
         $('#google_doc').css("display", "block");
         $('#google_doc').focus();
     });
+    $('#amaraButton').click(function() {
+        $(this).css("display", "none");
+        $('#amara').css("display", "block");
+        $('#amara').focus();
+    });
+    if ($('#amara').val().length > 0 ) {
+        $('#amara').css("display", "block");
+        $('#amaraButton').css("display", "none");
+    }
     if ($('#google_doc').val().length > 0 ) {
         $('#google_doc').css("display", "block");
         $('#googleButton').css("display", "none");

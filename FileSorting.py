@@ -58,6 +58,7 @@ STAGE_ONE_UPLOADS = "stageone{}".format(os.path.sep)
 STAGE_TWO_UPLOADS = "stagetwo{}".format(os.path.sep)
 STAGE_THREE_UPLOADS = "stagethree{}".format(os.path.sep)
 STAGE_FOUR_UPLOADS = "stagefour{}".format(os.path.sep)
+FINISHED_FILES_UPLOADS = "finishedfiles{}".format(os.path.sep)
 
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'rtf', 'srt', 'docx'}
 
@@ -124,14 +125,16 @@ uploads = {
         1: "stage one",
         2: "stage two",
         3: "stage three",
-        4: "stage four"
+        4: "stage four",
+        5: "finished files"
 }
 
 upload_path = {
     "stageone": STAGE_ONE_UPLOADS,
     "stagetwo": STAGE_TWO_UPLOADS,
     "stagethree": STAGE_THREE_UPLOADS,
-    "stagefour": STAGE_FOUR_UPLOADS
+    "stagefour": STAGE_FOUR_UPLOADS,
+    "finishedfiles": FINISHED_FILES_UPLOADS
 }
 
 # upload_tables = {
@@ -548,21 +551,37 @@ def index():
     if form.validate_on_submit():
         directory_choice = form.directory_choices.data
         file_type = form.type_choice.data
-        print("file uploaded")
         # Gets sub directory and removes whitespace " stage one " becomes " stageone "
         path = uploads[directory_choice].replace(" ", "")
 
         if allowed_file(form.upload.data.filename):
             filename = secure_filename(form.upload.data.filename)
-            print(form.type_choice.data)
-            print(form.directory_choices.data)
-            print(form.upload.data.filename)
             no_extension = form.upload.data.filename.rsplit('.', 1)[0]
-
             # check for file type with correct extension
             if not type_extension_check(filename, file_type):
                 flash("File extension doesn't match file type", "danger")
                 return render_template('index.html', form=form, video_files=video_files, audio_files=audio_files)
+
+            if path == "finishedfiles":
+                try:
+                    finished_file = models.FinishedFile.create(
+                        uploaded_by=g.user._get_current_object(),
+                        file_name=filename,
+                        file_type=file_type
+                    )
+                except models.IntegrityError:
+                    flash("File exists", "danger")
+                else:
+                    flash("File uploaded", "success")
+                    form.upload.data.save('{}{}{}'.format(UPLOAD_FOLDER, upload_path[path], filename))
+                    if form.google_doc:
+                        finished_file.google_docs = form.google_doc
+                        finished_file.save()
+                    if form.amara.data:
+                        finished_file.amara = form.amara.data
+                        finished_file.save()
+
+                return redirect(url_for('admin_index'))
 
             # check if user has uploaded file already
             if g.user.has_uploaded(path, filename, file_type):
@@ -603,6 +622,9 @@ def index():
             if form.google_doc.data:
                 created_file.google_docs = form.google_doc.data
                 created_file.save()
+            if form.amara.data:
+                created_file.amara = form.amara.data
+                created_file.save()
             # actually upload file
             send_mail("User uploaded", sender_email, [receiver],
                       render_template('admin/email.txt', user=g.user._get_current_object(),
@@ -621,8 +643,7 @@ def index():
 @authenticated
 @role_required(["admin", "superadmin"])
 def admin_index():
-    unconfirmed_users = models.User.select().where(~models.User.admin_confirmed)
-    users_no_roles = [x for x in models.get_users() if not x.has_any_role()]
+    unconfirmed_users = models.unconfirmed_users()
     form = forms.AdminUploadForm()
     form.directory_choices.choices = [(key, value) for key, value in uploads.items()]
     if form.validate_on_submit():
@@ -687,6 +708,9 @@ def admin_index():
                     if form.google_doc.data:
                         created_file.google_docs = form.google_doc.data
                         created_file.save()
+                    if form.amara.data:
+                        created_file.amara = form.amara.data
+                        created_file.save()
                     # actually upload file
                     form.upload.data.save("{}{}{}".format(UPLOAD_FOLDER, upload_path[path], filename))
                     return redirect(url_for('admin_index'))
@@ -706,13 +730,15 @@ def admin_index():
                     if form.google_doc.data:
                         created_file.google_docs = form.google_doc.data
                         created_file.save()
+                    if form.amara.data:
+                        created_file.amara = form.amara.data
+                        created_file.save()
                     # actually upload file
                     form.upload.data.save("{}{}[{}]{}".format(archive_path,
                                                               upload_path[path], version, filename))
                     return redirect(url_for('admin_index'))
 
-    return render_template('admin/home.html', unconfirmed_users=unconfirmed_users, form=form,
-                           unassigned_users=users_no_roles)
+    return render_template('admin/home.html', form=form, unassigned_users=unconfirmed_users)
 
 
 @app.route('/admin/users', methods=('GET', 'POST'))
@@ -754,6 +780,21 @@ def users(id=None):
 
     users = models.get_users()
     return render_template('admin/users.html', users=users)
+
+
+@app.route('/admin/deleteuser/<int:userid>', methods=('GET', 'POST'))
+@login_required
+@role_required(["superadmin"])
+def admin_delete_users(userid):
+    user = models.User.get_user(userid)
+    if not user:
+        abort(404)
+    if user.has_role("superadmin"):
+        flash("Can't delete user", "danger")
+        return redirect(url_for('users'))
+    user.delete_instance()
+    flash("User deleted", "success")
+    return redirect(url_for('users'))
 
 
 @app.route('/admin/required', methods=('GET', "POST"))
@@ -848,6 +889,28 @@ def admin_edit(id):
     else:
         print(form.errors)
     return render_template("admin/edit_info.html", form=form)
+
+
+@app.route("/admin/editfile/<stage>/<filename>", methods=('GET', 'POST'))
+@login_required
+@role_required(["admin", "superadmin"])
+def admin_edit_file(stage, filename):
+    form = forms.EditFile()
+    file = upload_tables[stage].get_file(filename)
+    if not file:
+        abort(404)
+    if form.google_doc.data and form.amara.data:
+        file.google_docs = form.google_doc.data
+        file.amara = form.amara.data
+    elif form.google_doc.data:
+        file.google_docs = form.google_doc.data
+    elif form.amara.data:
+        file.amara = form.amara.data
+    else:
+        return render_template('admin/edit_file.html', stage=stage, filename=filename, form=form)
+    file.save()
+    return redirect(url_for("admin_files"))
+
 
 
 @app.route('/admin/toggleconfirmed/<email>', methods=('GET', 'POST'))
@@ -1130,7 +1193,9 @@ def from_archive(directory, filename, filetype, version):
         file_exists.delete_instance()
     upload_tables[sub_directory].create_stage_entry(uploaded_by=transfer_file.uploaded_by,
                                                     file_name=transfer_file.file_name,
-                                                    file_type=transfer_file.file_type)
+                                                    file_type=transfer_file.file_type,
+                                                    google_docs=transfer_file.google_docs,
+                                                    amara=transfer_file.amara)
     clone_file(
         "{}{}[{}]{}".format(archive_path, upload_path[sub_directory], transfer_file.version, transfer_file.file_name),
         "{}{}{}".format(UPLOAD_FOLDER, upload_path[sub_directory], transfer_file.file_name)

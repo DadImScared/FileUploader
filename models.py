@@ -923,6 +923,18 @@ class GetStartedDownloads(Model):
             return None
 
 
+class FinishedFile(Model):
+    uploaded_by = ForeignKeyField(rel_model=User, related_name='finished_uploader')
+    uploaded_at = DateTimeField(default=datetime.datetime.now)
+    file_name = CharField(unique=True)
+    file_type = CharField()
+    google_docs = CharField(null=True)
+    amara = CharField(null=True)
+
+    class Meta:
+        database = DATABASE
+
+
 # All Download tables inherit from this base model
 class BaseStageDownload(Model):
     # file_name = CharField(unique=True)
@@ -954,16 +966,17 @@ class BaseStageUpload(Model):
     worked_on = BooleanField(default=False)
     file_type = CharField()
     google_docs = CharField(null=True)
+    amara = CharField(null=True)
 
     class Meta:
         database = DATABASE
         order_by = ('-uploaded_at',)
 
     @classmethod
-    def create_stage_entry(cls, uploaded_by, file_name, file_type, worked_on=False):
+    def create_stage_entry(cls, uploaded_by, file_name, file_type, worked_on=False, **kwargs):
         """Return Stage"""
         try:
-            cls.create(
+            file = cls.create(
                 uploaded_by=uploaded_by,
                 file_name=file_name,
                 file_type=file_type,
@@ -972,7 +985,16 @@ class BaseStageUpload(Model):
         except IntegrityError:
             return None
         else:
-            return cls.get(cls.file_name == file_name)
+            try:
+                file.google_docs = kwargs['google_docs']
+            except KeyError:
+                pass
+            try:
+                file.amara = kwargs['amara']
+            except KeyError:
+                pass
+            file.save()
+            return file
 
     @classmethod
     def get_file(cls, file_name, file_type=None):
@@ -1005,14 +1027,27 @@ class BaseArchiveUpload(BaseStageUpload):
     version = IntegerField()
 
     @classmethod
-    def create_archive_entry(cls, uploaded_by, file_name, version, file_type, worked_on=False):
-        return cls.create(
+    def create_archive_entry(cls, uploaded_by, file_name, version, file_type, worked_on=False, **kwargs):
+        file = cls.create(
             uploaded_by=uploaded_by,
             file_name=file_name,
             version=version,
             file_type=file_type,
             worked_on=worked_on
         )
+        try:
+            file.google_docs = kwargs['google_docs']
+        except KeyError:
+            pass
+        else:
+            file.save()
+        try:
+            file.amara = kwargs['amara']
+        except KeyError:
+            pass
+        else:
+            file.save()
+        return file
 
     @classmethod
     def next_file_version(cls, file_name, file_type):
@@ -1058,6 +1093,7 @@ class StageFourUpload(BaseStageUpload):
         rel_model=User,
         related_name="stage_four_uploads"
     )
+    complete = BooleanField(default=False)
 
 
 class StageOneDownload(BaseStageDownload):
@@ -1180,7 +1216,8 @@ upload_tables = {
     "stageone": StageOneUpload,
     "stagetwo": StageTwoUpload,
     "stagethree": StageThreeUpload,
-    "stagefour": StageFourUpload
+    "stagefour": StageFourUpload,
+    "finishedfiles": FinishedFile
 }
 
 
@@ -1215,7 +1252,9 @@ def file_to_archive(stage, file):
         uploaded_by=file.uploaded_by.id,
         file_name=file.file_name,
         version=version,
-        file_type=file.file_type
+        file_type=file.file_type,
+        google_docs=file.google_docs,
+        amara=file.amara
     )
     transfer_stage_downloads(stage, new_file, downloads_to_file)
     file.delete_instance()
@@ -1296,11 +1335,22 @@ def downloads():
             ("Stage Three Archive Downloads", archive_three), ("Stage Four Archive Downloads", archive_four)]
 
 
+def unconfirmed_users():
+    return {x for x in User.select() if not x.admin_confirmed or not x.has_any_role()}
+
+
+def mark_complete(file_name):
+    file = StageFourUpload.get_file(file_name=file_name)
+    if file:
+        file.complete = True
+        file.save()
+
 
 tables = [StageOneUpload, StageTwoUpload, StageThreeUpload, StageFourUpload, StageOneDownload, StageTwoDownload,
           StageThreeDownload, StageFourDownload, GetStarted, GetStartedDownloads,
           StageOneArchive, StageTwoArchive, StageThreeArchive, StageFourArchive,
-          StageOneArchiveDownload, StageTwoArchiveDownload, StageThreeArchiveDownload, StageFourArchiveDownload]
+          StageOneArchiveDownload, StageTwoArchiveDownload, StageThreeArchiveDownload, StageFourArchiveDownload,
+          FinishedFile]
 
 
 def initialize():

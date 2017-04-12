@@ -82,7 +82,7 @@
             <li class="nav-item dropdown float-xs-right">
                   <a class="nav-link dropdown-toggle" href="http://example.com" id="supportedContentDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-cog" aria-hidden="true"></i></a>
                   <div class="dropdown-menu dropdown-menu-right" aria-labelledby="supportedContentDropdown">
-                    <a class="dropdown-item" href="#">Action</a>
+                    <a class="dropdown-item" href="{{ url_for('users', id=g.user.id) }}">Profile</a>
                     <a class="dropdown-item" href="{{ url_for('edit_user') }}">Settings</a>
                     <a class="dropdown-item" href="#">Something else here</a>
                   </div>

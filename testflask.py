@@ -65,7 +65,8 @@ class BaseTestCase(TestCaseWithPeewee):
             Role.create(name=role[0], description=role[1])
         self.user = User.create_user("tom", "tom@gmail.com", "password", "stageone", True, True)
         self.second_user = User.create_user("mary", "mary@gmail.com", "password", "stageone")
-        self.third_user_admin = User.create_user("jerry", "jerry@gmail.com", "password", "admin", True, True)
+        self.third_user_admin = User.create_user("jerry", "jerry@gmail.com", "password", "superadmin", True, True)
+        self.superadmin = User.create_user("mark", "mark@gmail.com", "password", "superadmin", True, True)
         # reset_test_directories()
         # make_test_directories(UPLOAD_FOLDER)
         make_test_directories(UPLOAD_FOLDER)
@@ -184,6 +185,16 @@ class BaseTestCase(TestCaseWithPeewee):
         # self.assertMessageFlashed("File extension doesn't match file type", "danger")
 
     @client_context
+    def test_admin_can_upload(self):
+        info = {'type_choice': 'transcript', 'directory_choices': 5,
+                'upload': (BytesIO(b'adawfaf'), 'work.txt')}
+        self.client.post(url_for('login'), data={'email': 'jerry@gmail.com',
+                                                 'password': 'password'})
+        response = self.client.post(url_for('index'), data=info, content_type='multipart/form-data')
+        self.assertTrue(os.path.isfile('{}{}work.txt'.format(UPLOAD_FOLDER, upload_path["finishedfiles"])))
+        self.assertRedirects(response, url_for('admin_index'))
+
+    @client_context
     def test_users_can_download(self):
         self.client.post(url_for('login'), data={'email': 'tom@gmail.com', 'password': 'password'})
         fileName = "adawfaf"
@@ -231,6 +242,27 @@ class BaseTestCase(TestCaseWithPeewee):
         new_user = self.client.post(url_for('register_users'), data=user_info)
         self.assertMessageFlashed("User registered", "success")
         self.assertRedirects(new_user, url_for('register_users'))
+
+    @client_context
+    def test_admin_can_delete_users(self):
+        self.client.post(url_for('login'), data={'email': 'mark@gmail.com', 'password': 'password'})
+        self.assertEqual(4, User.select().count())
+        response = self.client.post(url_for('admin_delete_users', userid=1))
+        self.assertMessageFlashed("User deleted", "success")
+        self.assertRedirects(response, url_for('users'))
+        self.assertEqual(3, User.select().count())
+
+    @client_context
+    def test_breaking_admin_can_delete_users(self):
+        self.client.post(url_for('login'), data={'email': 'tom@gmail.com', 'password': 'password'})
+        response = self.client.post(url_for('admin_delete_users', userid=1))
+        self.assertRedirects(response, url_for('index'))
+        self.client.get(url_for('logout'))
+
+        # give user id that's out of range to test 404 works
+        self.client.post(url_for('login'), data={'email': 'mark@gmail.com', 'password': 'password'})
+        response_404 = self.client.post(url_for('admin_delete_users', userid=7))
+        self.assert404(response_404)
 
     @client_context
     def test_admin_can_toggle_admin_confirmed_on_user(self):

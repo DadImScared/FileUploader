@@ -23,6 +23,9 @@
                             <th scope="row">{{ user.id }}</th>
                             <td class="download hidden-lg-down">
                                 <a href="{{ url_for('admin_edit', id=user.id) }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                                {% if g.user.has_role("superadmin") %}
+                                    <a href="{{ url_for('admin_delete_users', userid=user.id) }}"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+                                {% endif %}
                             </td>
                             <td>{{ user.username }}</td>
                             <td>{{ user.email }}</td>
@@ -155,9 +158,10 @@
         });
     });
 
+
     var personId;
     var personEmail;
-    var assignedRole = "stageone";
+    var assignedRole;
     var $roleButton;
     var $mobileRoleButton;
     var onMobile = false;
@@ -169,6 +173,8 @@
         personEmail = $this.parent().parent().children(":nth-child(4)").text();
         $('.modal-title').text(personEmail);
 {#        console.log($('#' + personId).children(":last-child").children().text("Stage One"));#}
+        console.log($roleButton.text().trim());
+        $('#role-form').val($roleButton.text().trim());
     });
 
     $('.mobile-user-list').click(function() {
@@ -192,13 +198,16 @@
                 if (!onMobile) {
                     $roleButton.children(":first-child").removeClass("btn-danger").addClass("assign-role");
                     $roleButton.children(":first-child").text(assignedRole);
+                    $('.modal').modal('toggle');
                 } else {
                     $mobileRoleButton.text(assignedRole);
                     $mobileRoleButton.removeClass('btn-danger').addClass('mobile-assign-role');
+
                 }
 
             }
         });
+
     });
 
     $('#delete-role').click(function() {
@@ -225,7 +234,6 @@
         assignedRole = $(this).val();
     });
     $('.modal').on('hide.bs.modal', function(e) {
-        $('#role-form').val("stageone");
         assignedRole = $('#role-form').val();
     });
 

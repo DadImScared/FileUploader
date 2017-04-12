@@ -8,3 +8,4 @@ donetranscripts.txt
 people.db
 /static/testing/
 pathtest.py
+download_checker.py

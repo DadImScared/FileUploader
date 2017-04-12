@@ -34,7 +34,23 @@
 
                             </label>
                         {% endfor %}
+                        <div class="form-group">
+                            <div class="row">
+                                <div id="googleLink" class="col-xs-12 col-lg-10 offset-lg-1">
+                                    <button id="googleButton" type="button" class="button-styles btn btn-sm col-xs-12">Add Google doc link</button>
+                                    {{ render_field(form.google_doc, type="text", class="form-control") }}
+                                </div>
+                            </div>
+                        </div>
 
+                        <div class="form-group">
+                            <div class="row">
+                                <div id="amaraLink" class="col-xs-12 col-lg-10 offset-lg-1">
+                                    <button id="amaraButton" type="button" class="button-styles btn btn-sm col-xs-12">Add Amara link</button>
+                                    {{ render_field(form.amara, type="text", class="form-control") }}
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="form-group">
                             <div class="row pb-1">
@@ -246,5 +262,26 @@
     });
 
     $('.form-control-feedback').addClass('home-errors');
+
+    $("#google_doc, #amara").css("display", "none");
+
+    $('#googleButton').click(function() {
+        $(this).css("display", "none");
+        $('#google_doc').css("display", "block");
+        $('#google_doc').focus();
+    });
+    $('#amaraButton').click(function() {
+        $(this).css("display", "none");
+        $('#amara').css("display", "block");
+        $('#amara').focus();
+    });
+    if ($('#amara').val().length > 0 ) {
+        $('#amara').css("display", "block");
+        $('#amaraButton').css("display", "none");
+    }
+    if ($('#google_doc').val().length > 0 ) {
+        $('#google_doc').css("display", "block");
+        $('#googleButton').css("display", "none");
+    }
     </script>
 {% endblock %}
