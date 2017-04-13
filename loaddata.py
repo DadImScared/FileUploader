@@ -16,7 +16,7 @@ roles = [("stageone", "stage one"), ("stagetwo", "stage two"),
          ("admin", "admin"), ("superadmin", "super admin")]
 directories = [
         ("stageone", "stage one"), ("stagetwo", "stage two"),
-        ("stagethree", "stage three"), ("stagefour", "stage four")
+        ("stagethree", "stage three"), ("stagefour", "stage four"), ("finishedfiles", "finished files")
 ]
 models.initialize()
 
@@ -27,7 +27,7 @@ stages = [models.StageOneUpload, models.StageTwoUpload,
         models.StageOneArchive, models.StageTwoArchive,
         models.StageThreeArchive, models.StageFourArchive,
         models.StageOneArchiveDownload, models.StageTwoArchiveDownload,
-        models.StageThreeArchiveDownload, models.StageFourArchiveDownload]
+        models.StageThreeArchiveDownload, models.StageFourArchiveDownload, models.FinishedFile]
 
 for stage in stages:
     stage.drop_table()
