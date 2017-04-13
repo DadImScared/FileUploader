@@ -593,6 +593,7 @@ def index():
                     if form.amara.data:
                         finished_file.amara = form.amara.data
                         finished_file.save()
+                    models.mark_complete(finished_file.file_name)
 
                 return redirect(url_for('admin_index'))
 
@@ -695,6 +696,7 @@ def admin_index():
                     if form.amara.data:
                         finished_file.amara = form.amara.data
                         finished_file.save()
+                    models.mark_complete(finished_file.file_name)
 
                 return redirect(url_for('admin_index'))
 

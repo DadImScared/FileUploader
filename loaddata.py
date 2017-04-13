@@ -32,6 +32,9 @@ stages = [models.StageOneUpload, models.StageTwoUpload,
 for stage in stages:
     stage.drop_table()
 
+# for stage in stages:
+#     stage.create_table()
+
 models.initialize()
 
 # for role in roles:
