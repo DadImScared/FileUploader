@@ -7,6 +7,54 @@
 {% if current_user.is_authenticated and current_user.admin_confirmed and current_user.email_confirmed %}
     <div class="px-1">
     <div id="main-body" class="container mt-2 py-2 text-xs-center">
+        <div>
+            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#instructions" aria-expanded="false" aria-controls="instructions">
+                Click for instructions
+            </button>
+            <div class="collapse" id="instructions">
+              <div class="card card-block">
+                  <p>The following are instructions to take a video(preferred) or audio file
+                    and create a document of the subtitle or transcript.
+                  </p>
+                  <ol>
+                      <li class="pb-2">
+                          <h5>Step one: Selecting a file.</h5>
+                          <h3>Videos/Subtitling is preferred </h3>
+                          Select video or audio from
+                          <a href="{{ url_for('get_started_files') }}">Here</a>
+                          or from the links below.
+                      </li>
+                      <li class="pb-2">
+                          <h5>Step two: Creating a document.</h5>
+                          <p>If the file is audio also known as a transcript
+                              the document should have the following extensions ['doc', 'txt', 'rtf', 'docx'].
+                          </p>
+                          <p>If the file is a video also known as a subtitle
+                            the document should have the following extensions ['vtt'].
+                          </p>
+                          <p>The document should be the name of the audo or video link for example:
+                              the link <a href="http://sbnmcd.org/All_mp3/1991-01-24%20Srila%20Gurudeva%20on%20Govrdhan%20parikrama%20Harikatha%20in%20Hindi.MP3">
+                                  19910124 Srila Gurudeva on Govrdhan parikrama Harikatha in Hindi.MP3
+                              </a>
+                              has the name 19910124 Srila Gurudeva on Govrdhan parikrama Harikatha in Hindi.MP3.
+                              It is an audio file. So a document could be named<br>
+                              <span class="underline-text">19910124 Srila Gurudeva on Govrdhan parikrama Harikatha in Hindi.MP3.doc</span>
+                          </p>
+                      </li>
+                      <li class="pb-2">
+                          <h5>Step three: Subtitling the document</h5>
+                          <p>Link to guide <a href="https://docs.google.com/document/d/1n6UeiZ0k302jrlumW4ihtHVU3Tfu_MUEo70Dm-OuyLg/edit">Here</a></p>
+                      </li>
+                      <li>
+                          <h5>Step four: Uploading the document</h5>
+                          Select one of the options of <em>transcript</em> or <em>subtitle</em>
+                          if the document has a link to it in google docs or amara you can link to it by clicking the appropriate button.
+                          Choose the file then submit.
+                      </li>
+                  </ol>
+              </div>
+            </div>
+        </div>
         <div class="row">
             <div class="col-md-3">
                 <p>instructions here</p>

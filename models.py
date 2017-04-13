@@ -888,6 +888,7 @@ class GetStarted(Model):
 
     class Meta:
         database = DATABASE
+        order_by = ('id', )
 
 
 class GetStartedDownloads(Model):

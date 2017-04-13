@@ -136,4 +136,4 @@ class AdminUploadForm(UploadForm):
 
 
 class EmailForm(Form):
-    email_message = TextAreaField(validators=[DataRequired()])
+    email_message = TextAreaField("Enter message here", validators=[DataRequired()])

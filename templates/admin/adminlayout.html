@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>{% block title %}Test{% endblock %}</title>
+    <title>{% block title %}Seva Teams{% endblock %}</title>
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             <div id="message" class="text-xs-center">
@@ -48,6 +48,7 @@
     <a href="{{ url_for('register_users') }}">Register user</a>
     <a href="{{ url_for('index') }}">Main page</a>
     <a href="{{ url_for('users', id=g.user.id) }}">Profile</a>
+    <a href="{{ url_for('support') }}">Contact us</a>
     <a href="{{ url_for('edit_user') }}">Settings</a>
     <a href="{{ url_for('logout') }}">Log out</a>
 </div>
@@ -84,7 +85,7 @@
                   <div class="dropdown-menu dropdown-menu-right" aria-labelledby="supportedContentDropdown">
                     <a class="dropdown-item" href="{{ url_for('users', id=g.user.id) }}">Profile</a>
                     <a class="dropdown-item" href="{{ url_for('edit_user') }}">Settings</a>
-                    <a class="dropdown-item" href="#">Something else here</a>
+                    <a class="dropdown-item" href="{{ url_for('support') }}">Contact us</a>
                   </div>
             </li>
             <li class="nav-item float-xs-right">

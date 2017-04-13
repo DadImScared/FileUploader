@@ -40,7 +40,7 @@ app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
-app.config['MAIL_SUPPRESS_SEND'] = True
+# app.config['MAIL_SUPPRESS_SEND'] = True
 
 
 mail = Mail(app)
@@ -60,11 +60,11 @@ STAGE_THREE_UPLOADS = "stagethree{}".format(os.path.sep)
 STAGE_FOUR_UPLOADS = "stagefour{}".format(os.path.sep)
 FINISHED_FILES_UPLOADS = "finishedfiles{}".format(os.path.sep)
 
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'rtf', 'srt', 'docx'}
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'rtf', 'vtt', 'docx'}
 
 TRANSCRIPT_EXTENSIONS = ['doc', 'txt', 'rtf', 'docx']
 
-SUBTITLE_EXTENSIONS = ['srt']
+SUBTITLE_EXTENSIONS = ['vtt']
 
 
 def allowed_file(filename):
@@ -341,6 +341,19 @@ def logout():
     return redirect(url_for('index'))
 
 
+@app.route('/support', methods=('GET', 'POST'))
+@login_required
+def support():
+    form = forms.EmailForm()
+    if form.validate_on_submit():
+        print("Formsubbmited")
+        send_mail("Support mail", sender=sender_email, recipients=[receiver], text_body=form.email_message.data)
+        flash("Message sent", "success")
+        return redirect(url_for('index'))
+    return render_template('support.html', form=form)
+
+
+
 @app.route('/uploads/<path:directory>/<filename>')
 @app.route('/uploads/<path:directory>/<filename>/<int:version>')
 def downloads(directory, filename, version=None):
@@ -402,7 +415,7 @@ def get_started_files():
                                              (models.GetStarted.worked_on == False))
     video = models.GetStarted.select().where((models.GetStarted.file_type == "Video") &
                                              (models.GetStarted.worked_on == False))
-    all_files = [x for x in audio] + [x for x in video]
+    all_files = [x for x in video] + [x for x in audio]
     return render_template("get_started.html", audio=audio, video=video, all_files=all_files)
 
 
@@ -664,6 +677,27 @@ def admin_index():
                 flash("File extension doesn't match file type", "danger")
                 return render_template('admin/home.html', unconfirmed_users=unconfirmed_users, form=form)
 
+            if path == "finishedfiles":
+                try:
+                    finished_file = models.FinishedFile.create(
+                        uploaded_by=g.user._get_current_object(),
+                        file_name=filename,
+                        file_type=file_type
+                    )
+                except models.IntegrityError:
+                    flash("File exists", "danger")
+                else:
+                    flash("File uploaded", "success")
+                    form.upload.data.save('{}{}{}'.format(UPLOAD_FOLDER, upload_path[path], filename))
+                    if form.google_doc:
+                        finished_file.google_docs = form.google_doc
+                        finished_file.save()
+                    if form.amara.data:
+                        finished_file.amara = form.amara.data
+                        finished_file.save()
+
+                return redirect(url_for('admin_index'))
+
             # check if user has uploaded file already
             if g.user.has_uploaded(path, filename, file_type):
                 flash("You've already uploaded this file!", "warning")
@@ -756,7 +790,10 @@ def users(id=None):
         if not user:
             abort(404)
         all_files = user.all_records()
-        return render_template('admin/user.html', user=user, all_files=all_files)
+        get_started = models.GetStartedDownloads.select().where(
+            models.GetStartedDownloads.user == g.user._get_current_object()
+        )
+        return render_template('admin/user.html', user=user, all_files=all_files, get_started=get_started)
                                # # stage 1-4
                                # stage_one_files=all_files['stage'][0],
                                # stage_two_files=all_files['stage'][1],

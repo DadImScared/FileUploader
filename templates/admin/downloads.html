@@ -66,7 +66,7 @@
         <div>
             <ul class="list-group">
             {% for file in get_started %}
-                <li class="list-group-item text-white">{{ file.file.file_name }}</li>
+                <li class="list-group-item text-white"><a class="text-white" href="{{ file.file.file_link }}">{{ file.file.file_name }}</a></li>
             {% endfor %}
             </ul>
         </div>

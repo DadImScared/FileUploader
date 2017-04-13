@@ -154,6 +154,11 @@ class BaseTestCase(TestCaseWithPeewee):
             self.assertMessageFlashed("You've been logged in", "success")
             self.assertRedirects(response, url_for('index'))
 
+    @client_context
+    def test_support_page(self):
+        self.client.post(url_for('login'), data={'email': 'tom@gmail.com', 'password': 'password'})
+        response = self.client.get(url_for('support'))
+        self.assert200(response)
 
     @client_context
     def test_files_route(self):

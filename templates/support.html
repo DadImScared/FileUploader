@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% from "macros.html" import render_field %}
+
+{% block content %}
+    <div class="container">
+        <form method="POST" class="form" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-xs-12 col-lg-10 offset-lg-1">
+                        {{ render_field(form.email_message, class='form-control') }}
+                    </div>
+                    <button type="submit" class="btn btn-primary col-xs-10 offset-xs-1">Submit</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+{% endblock %}

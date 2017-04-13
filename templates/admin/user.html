@@ -108,6 +108,14 @@
                     {% endif %}
                 {% endfor %}
             {% endfor %}
+            <h3>Get Started Downloads <span class="tag tag-pill tag-danger">{{ get_started | length }}</span></h3>
+            <div>
+                <ul class="list-group">
+                {% for file in get_started %}
+                    <li class="list-group-item text-white"><a class="text-white" href="{{ file.file.file_link }}">{{ file.file.file_name }}</a></li>
+                {% endfor %}
+                </ul>
+            </div>
 
 {#            {% if stage_one_files %}#}
 {#                <h3 class="row">Stage One <span class="tag tag-pill tag-danger">{{ stage_one_files | length }}</span></h3>#}
