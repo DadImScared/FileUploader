@@ -8,6 +8,7 @@ from flask_login import (LoginManager, login_user, logout_user,
                          login_required, current_user)
 from flask_bcrypt import check_password_hash, generate_password_hash
 from flask_mail import Mail, Message
+from flask_sslify import SSLify
 from werkzeug.utils import secure_filename
 from threading import Thread
 import re
@@ -89,6 +90,7 @@ def type_extension_check(filename, filetype):
 
 def validate_email(email):
     return re.search(r'^[^\s@]+@[^\s@]+.[^\s@]+$', email)
+
 
 def restrict_files(file_list):
     if g.user.has_role('admin') or g.user.has_role('superadmin') or g.user.has_role('stagefour'):
@@ -351,7 +353,6 @@ def support():
         flash("Message sent", "success")
         return redirect(url_for('index'))
     return render_template('support.html', form=form)
-
 
 
 @app.route('/uploads/<path:directory>/<filename>')
@@ -1394,6 +1395,6 @@ def from_archive(directory, filename, filetype, version):
 #             return redirect(url_for('archive_files'))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
 
 

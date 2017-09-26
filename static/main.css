@@ -402,6 +402,10 @@ th {
     text-decoration: underline;
 }
 
+#signed-out-view {
+    background-color: #fafafa;
+}
+
 /*********** 588B8B     REGISTER PAGE     6A8D73   545F66   **********/
 /*maybe backgrounds 8EB1C7 495867*/
 /*maybe background of backgrounds F0A202*/
